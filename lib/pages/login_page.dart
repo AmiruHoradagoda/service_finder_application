@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: emailController,
                   keyboardType:
                       TextInputType.emailAddress, // Added keyboardType
-                  icon: Icon(Icons.email, color: Colors.grey),
+                  icon: const Icon(Icons.email, color: Colors.grey),
                 ),
                 const SizedBox(height: 10),
                 MyTextField(

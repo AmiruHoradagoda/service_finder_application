@@ -1,13 +1,32 @@
 {
   "project_info": {
-    "project_number": "1057139951408",
-    "project_id": "serviceproviderapp-89b2c",
-    "storage_bucket": "serviceproviderapp-89b2c.appspot.com"
+    "project_number": "1038531902572",
+    "project_id": "newapp-service",
+    "storage_bucket": "newapp-service.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1057139951408:android:a508dc93e843900042eaf5",
+        "mobilesdk_app_id": "1:1038531902572:android:822f007f279905cea52c49",
+        "android_client_info": {
+          "package_name": "com.example.newapp_service"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvH4TWDQajQkcaiEsuAz2Xfy1lKCUXnq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038531902572:android:537b6c0ac0863d07a52c49",
         "android_client_info": {
           "package_name": "lk.uor.serviceProvider"
         }
@@ -15,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCUVZZOOuMmJ6SWt065Qc3H2ZyRXkEGPNE"
+          "current_key": "AIzaSyDvH4TWDQajQkcaiEsuAz2Xfy1lKCUXnq4"
         }
       ],
       "services": {

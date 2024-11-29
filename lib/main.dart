@@ -15,12 +15,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    DevicePreview(
-      enabled: true, // Enable or disable DevicePreview here
-      builder: (context) => const RootApp(), // Wrap your app
-    ),
-  );
+  runApp(const RootApp());
 }
 
 class RootApp extends StatelessWidget {
@@ -30,11 +25,6 @@ class RootApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery:
-          true, // Allows DevicePreview to simulate different screen sizes
-      locale:
-          DevicePreview.locale(context), // Sets the locale for DevicePreview
-      builder: DevicePreview.appBuilder, // Enables the preview builder
       home: const AuthPage(),
       theme: lightMode,
       darkTheme: darkMode,
@@ -42,7 +32,7 @@ class RootApp extends StatelessWidget {
         '/login_register_page': (context) => const LoginOrRegister(),
         '/home_page': (context) => HomePage(),
         '/profile_page': (context) => ProfilePage(),
-        '/users_page': (context) => const UsersPage(),
+        '/users_page': (context) => UsersPage(),
       },
     );
   }

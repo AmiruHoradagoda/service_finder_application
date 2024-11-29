@@ -73,7 +73,7 @@ class OpenedPostPage extends StatelessWidget {
                 ],
                 // Post Message
                 Text(
-                  "Message: $postMessage",
+                  postMessage,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
