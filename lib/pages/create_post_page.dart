@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:service_finder_application/database/firestore.dart';
+import 'package:service_finder_application/helper/locations.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -25,8 +26,9 @@ class _PostPageState extends State<PostPage> {
   final TextEditingController facebookLinkController = TextEditingController();
   final TextEditingController websiteLinkController = TextEditingController();
 
-  List<File?> images =
-      List<File?>.filled(4, null); // Initialize with 4 null elements
+  String? selectedLocation;
+
+  List<File?> images = List<File?>.filled(4, null);
   final FirestoreDatabase database = FirestoreDatabase();
   bool isAskPost = true;
   bool isLoading = false;
@@ -39,13 +41,11 @@ class _PostPageState extends State<PostPage> {
 
   Future<void> _checkProviderStatus() async {
     User? user = FirebaseAuth.instance.currentUser;
-
     if (user != null) {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('Users')
           .doc(user.email)
           .get();
-
       if (userDoc.exists) {
         bool isProvider = userDoc['provider'] ?? false;
         setState(() {
@@ -58,7 +58,6 @@ class _PostPageState extends State<PostPage> {
   Future<void> pickImage(int index) async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-
     if (pickedImage != null) {
       setState(() {
         images[index] = File(pickedImage.path);
@@ -69,7 +68,6 @@ class _PostPageState extends State<PostPage> {
   Future<List<String>> uploadImages(List<File?> images) async {
     List<String> imageUrls = [];
     FirebaseStorage storage = FirebaseStorage.instance;
-
     for (File? image in images) {
       if (image != null) {
         try {
@@ -79,6 +77,7 @@ class _PostPageState extends State<PostPage> {
           String downloadUrl = await storageRef.getDownloadURL();
           imageUrls.add(downloadUrl);
         } catch (e) {
+          // ignore: avoid_print
           print("Error uploading image: $e");
         }
       }
@@ -87,14 +86,14 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> postMessage(BuildContext context) async {
-    if (titleController.text.isNotEmpty && mobile1Controller.text.isNotEmpty) {
+    if (titleController.text.isNotEmpty &&
+        mobile1Controller.text.isNotEmpty &&
+        selectedLocation != null) {
       setState(() {
         isLoading = true;
       });
 
-      // Generate a unique post_ID using timestamp or random string
       String postId = DateTime.now().millisecondsSinceEpoch.toString();
-
       String title = titleController.text;
       String description = descriptionController.text;
       String mobile1 = mobile1Controller.text;
@@ -104,16 +103,12 @@ class _PostPageState extends State<PostPage> {
       String facebookLink = facebookLinkController.text;
       String websiteLink = websiteLinkController.text;
 
-      // Upload images and get URLs
       List<String> imageUrls = await uploadImages(images);
-
-      // Fetch user ID from FirebaseAuth
       String userId = FirebaseAuth.instance.currentUser!.uid;
 
-      // Add post with the generated post_ID and user_ID
       await database.addPost(
-        postId: postId, // Pass post_ID to the database function
-        userId: userId, // Pass the user ID
+        postId: postId,
+        userId: userId,
         message: title,
         isAsk: isAskPost,
         description: description,
@@ -123,15 +118,14 @@ class _PostPageState extends State<PostPage> {
         whatsappLink: whatsappLink,
         facebookLink: facebookLink,
         websiteLink: websiteLink,
+        location: selectedLocation!,
         imageUrls: imageUrls,
       );
 
-      // Clear the input fields and reset
       setState(() {
-        images = List<File?>.filled(4, null); // Reset images
+        images = List<File?>.filled(4, null);
         isLoading = false;
       });
-
       Navigator.pop(context);
     }
   }
@@ -162,59 +156,78 @@ class _PostPageState extends State<PostPage> {
                 hintText: "Title",
                 obscureText: false,
                 controller: titleController,
-                keyboardType: TextInputType.text, // Pass keyboardType here
+                keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 20),
               MyTextField(
                 hintText: "Description",
                 obscureText: false,
                 controller: descriptionController,
-                keyboardType: TextInputType.text, // Pass keyboardType here
+                keyboardType: TextInputType.text,
+              ),
+              const SizedBox(height: 20),
+              DropdownButtonFormField<String>(
+                value: selectedLocation,
+                items: locations.map((location) {
+                  return DropdownMenuItem(
+                    value: location,
+                    child: Text(location),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedLocation = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                  hintText: "Select Location",
+                ),
               ),
               const SizedBox(height: 20),
               MyTextField(
                 hintText: "Mobile Number 1 (required)",
                 obscureText: false,
                 controller: mobile1Controller,
-                keyboardType: TextInputType.phone, // Pass keyboardType here
+                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 20),
               MyTextField(
                 hintText: "Mobile Number 2 (optional)",
                 obscureText: false,
                 controller: mobile2Controller,
-                keyboardType: TextInputType.phone, // Pass keyboardType here
+                keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 20),
               MyTextField(
                 hintText: "Address",
                 obscureText: false,
                 controller: addressController,
-                keyboardType: TextInputType.text, // Pass keyboardType here
+                keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 20),
-              MyTextField(
-                hintText: "WhatsApp Link (optional)",
-                obscureText: false,
-                controller: whatsappLinkController,
-                keyboardType: TextInputType.url, // Pass keyboardType here
-              ),
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Facebook Link (optional)",
-                obscureText: false,
-                controller: facebookLinkController,
-                keyboardType: TextInputType.url, // Pass keyboardType here
-              ),
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Website Link (optional)",
-                obscureText: false,
-                controller: websiteLinkController,
-                keyboardType: TextInputType.url, // Pass keyboardType here
-              ),
-              const SizedBox(height: 20),
-              // Image selector buttons as rectangles in 2 rows
+              if (isAskPost == false) ...[
+                MyTextField(
+                  hintText: "WhatsApp Link (optional)",
+                  obscureText: false,
+                  controller: whatsappLinkController,
+                  keyboardType: TextInputType.url,
+                ),
+                const SizedBox(height: 20),
+                MyTextField(
+                  hintText: "Facebook Link (optional)",
+                  obscureText: false,
+                  controller: facebookLinkController,
+                  keyboardType: TextInputType.url,
+                ),
+                const SizedBox(height: 20),
+                MyTextField(
+                  hintText: "Website Link (optional)",
+                  obscureText: false,
+                  controller: websiteLinkController,
+                  keyboardType: TextInputType.url,
+                ),
+                const SizedBox(height: 20),
+              ],
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -255,7 +268,6 @@ class _PostPageState extends State<PostPage> {
                       onTap: () => postMessage(context),
                       text: "Post",
                     ),
-              const SizedBox(height: 25),
             ],
           ),
         ),

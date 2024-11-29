@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/auth/auth.dart';
@@ -32,7 +31,7 @@ class RootApp extends StatelessWidget {
         '/login_register_page': (context) => const LoginOrRegister(),
         '/home_page': (context) => HomePage(),
         '/profile_page': (context) => ProfilePage(),
-        '/users_page': (context) => UsersPage(),
+        '/users_page': (context) => const UsersPage(),
       },
     );
   }
