@@ -83,46 +83,41 @@ class _HomePageState extends State<HomePage> {
                     fillColor: Theme.of(context).colorScheme.surface,
                   ),
                 ),
-                const SizedBox(height: 8),
-                // Location Dropdown wrapped in a Container
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Theme.of(context).colorScheme.surface,
-                  ),
-                  child: DropdownButton<String>(
-                    value: _selectedLocation,
-                    hint: const Text('Select Location'),
-                    isExpanded: true,
-                    items: [
-                      'Clear Location', // The "Clear Location" option
-                      ...locations, // Predefined locations
-                    ].map((location) {
-                      return DropdownMenuItem<String>(
-                        value: location,
-                        child: Text(location == 'Clear Location'
-                            ? 'Clear Location'
-                            : location),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value == 'Clear Location') {
-                        setState(() {
-                          _selectedLocation =
-                              null; // Clear the selected location
-                        });
-                      } else {
-                        _onLocationChanged(
-                            value); // Handle regular location change
-                      }
-                    },
-                    underline: const SizedBox(), // Hide the default underline
-                  ),
-                ),
               ],
             ),
           ),
         ),
+        actions: [
+          // Location Dropdown placed at the top-right corner
+          Container(
+            padding: const EdgeInsets.all(1.0),
+            child: DropdownButton<String>(
+              value: _selectedLocation,
+              hint: const Text('Location'),
+              items: [
+                'Clear Location', // The "Clear Location" option
+                ...locations, // Predefined locations
+              ].map((location) {
+                return DropdownMenuItem<String>(
+                  value: location,
+                  child: Text(location == 'Clear Location'
+                      ? 'Clear Location'
+                      : location),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value == 'Clear Location') {
+                  setState(() {
+                    _selectedLocation = null; // Clear the selected location
+                  });
+                } else {
+                  _onLocationChanged(value); // Handle regular location change
+                }
+              },
+              underline: const SizedBox(), // Hide the default underline
+            ),
+          ),
+        ],
       ),
       drawer: const MyDrawer(),
       body: Column(
