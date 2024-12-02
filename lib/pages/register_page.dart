@@ -71,91 +71,134 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size; // Get screen size
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.person,
-                  size: 80,
-                  color: Theme.of(context).colorScheme.inversePrimary,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image at the top covering the screen width (Full width, 35% height of screen)
+            Container(
+              width: size.width,
+              height: size.height * 0.35, // 35% of the screen height
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover, // Image will cover the container
+                  image: AssetImage('assets/images/service-provider-login.png'),
                 ),
-                const SizedBox(height: 25),
-                const Text(
-                  "S E R V I C E   F I N D E R",
-                  style: TextStyle(fontSize: 20),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
-                const SizedBox(height: 25),
-                MyTextField(
-                  hintText: "Username",
-                  obscureText: false,
-                  controller: userNameController,
-                  keyboardType: TextInputType.text, // Added keyboardType
-                  icon: const Icon(Icons.person, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  hintText: "Email",
-                  obscureText: false,
-                  controller: emailController,
-                  keyboardType:
-                      TextInputType.emailAddress, // Added keyboardType
-                  icon: const Icon(Icons.email, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  hintText: "Password",
-                  obscureText: true,
-                  controller: passwordController,
-                  keyboardType: TextInputType.text, // Added keyboardType
-                  icon: const Icon(Icons.lock, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  hintText: "Confirm Password",
-                  obscureText: true,
-                  controller: confirmPasswordController,
-                  keyboardType: TextInputType.text, // Added keyboardType
-                  icon: const Icon(Icons.lock, color: Colors.grey),
-                ),
-                const SizedBox(height: 25),
-                MyButton(onTap: registerUser, text: "Register"),
-                const SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account?"),
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: const Text(
-                        " Login Here.",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Register as a service provider?"),
-                    GestureDetector(
-                      onTap: goToProviderRegisterPage,
-                      child: const Text(
-                        " Become a Provider.",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Create Account",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Sign Up With Your User Account",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // User Name
+                  MyTextField(
+                    hintText: "Username",
+                    obscureText: false,
+                    controller: userNameController,
+                    keyboardType: TextInputType.text,
+                    icon: const Icon(Icons.person, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Email
+                  MyTextField(
+                    hintText: "Email",
+                    obscureText: false,
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    icon: const Icon(Icons.email, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Password
+                  MyTextField(
+                    hintText: "Password",
+                    obscureText: true,
+                    controller: passwordController,
+                    keyboardType: TextInputType.text,
+                    icon: const Icon(Icons.lock, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 15),
+
+                  // Confirm Password
+                  MyTextField(
+                    hintText: "Confirm Password",
+                    obscureText: true,
+                    controller: confirmPasswordController,
+                    keyboardType: TextInputType.text,
+                    icon: const Icon(Icons.lock, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Register Button
+                  MyButton(
+                    onTap: registerUser,
+                    text: "Register",
+                    color: Colors.blue, // Set suitable color for the button
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Existing Account Text
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already have an account?"),
+                      GestureDetector(
+                        onTap: widget.onTap,
+                        child: const Text(
+                          " Login Here.",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Register as a Provider Text
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Register as a service provider?"),
+                      GestureDetector(
+                        onTap: goToProviderRegisterPage,
+                        child: const Text(
+                          " Become a Provider.",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
