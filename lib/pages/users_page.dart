@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/components/my_list_tile.dart';
 import 'package:service_finder_application/helper/helper_functions.dart';
+import 'package:service_finder_application/pages/chat_page.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -10,6 +11,11 @@ class UsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: const Text("Messages"),
+        backgroundColor: Colors.teal,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: StreamBuilder(
           stream: FirebaseFirestore.instance.collection("Users").snapshots(),
@@ -37,24 +43,36 @@ class UsersPage extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(left: 10, top: 10),
-                  child: Row(
-                    children: [
-                      BackButton(),
-                    ],
-                  ),
                 ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: users.length,
                     padding: const EdgeInsets.all(0),
                     itemBuilder: (context, index) {
-                      //get individual user
+                      // get individual user
                       final user = users[index];
 
                       String username = user['username'];
                       String email = user['email'];
+                      String userID = user['user_ID'];
 
-                      return MyListTile(title: username, subtitle: email);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                receiverUserEmail: email,
+                                receiverUserID: userID,
+                              ),
+                            ),
+                          );
+                        },
+                        child: MyListTile(
+                          title: username,
+                          subtitle: email,
+                        ),
+                      );
                     },
                   ),
                 ),

@@ -31,8 +31,9 @@ class RootApp extends StatelessWidget {
       routes: {
         '/login_register_page': (context) => const LoginOrRegister(),
         '/home_page': (context) => HomePage(),
-        '/profile_page': (context) => const ProfilePage(),
-        '/users_page': (context) => const UsersPage(),
+        '/profile_page': (context) => ProfilePage(),
+        '/users_page': (context) => UsersPage(),
+
       },
     );
   }

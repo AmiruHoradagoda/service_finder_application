@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/database/firestore.dart';
+import 'package:service_finder_application/pages/chat_page.dart';
 
 class OpenedPostPage extends StatelessWidget {
   final String postId;
@@ -45,16 +46,17 @@ class OpenedPostPage extends StatelessWidget {
         String mobile1 = postData['Mobile1'] ?? '';
         String? mobile2 = postData['Mobile2'];
         String username = postData['username'] ?? '';
-        String? whatsappLink = postData['WhatsappLink'];
-        String? facebookLink = postData['FacebookLink'];
-        String? websiteLink = postData['WebsiteLink'];
+        String userEmail = postData['UserEmail'] ??
+            ''; // Assuming the email is stored in the post
+        String userID = postData['UserID'] ??
+            ''; // Assuming the user ID is stored in the post
         List<dynamic> imageUrls = postData['ImageUrls'] ?? [];
         bool ask = postData['ask'] ?? false;
 
         return Scaffold(
           appBar: AppBar(
             title: const Text("Post Details"),
-            backgroundColor: theme.colorScheme.secondary,
+            backgroundColor: Colors.teal,
             foregroundColor: theme.colorScheme.onPrimary,
           ),
           body: SingleChildScrollView(
@@ -140,109 +142,93 @@ class OpenedPostPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
                 // Social Links Section - Visible only if `ask` is false
                 if (!ask &&
-                    (whatsappLink != null ||
-                        facebookLink != null ||
-                        websiteLink != null))
-                  if (!ask &&
-                      (whatsappLink != null ||
-                          facebookLink != null ||
-                          websiteLink != null))
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.shadow.withOpacity(0.1),
-                            blurRadius: 6,
-                            offset: const Offset(0, 4),
+                    (postData['WhatsappLink'] != null ||
+                        postData['FacebookLink'] != null ||
+                        postData['WebsiteLink'] != null))
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.shadow.withOpacity(0.1),
+                          blurRadius: 6,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Social Links",
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                          if (postData['WhatsappLink'] != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("WhatsApp: "),
+                                Text(
+                                  postData['WhatsappLink'],
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                    decorationThickness: 2.0,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                          if (postData['FacebookLink'] != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("Facebook: "),
+                                Text(
+                                  postData['FacebookLink'],
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                    decorationThickness: 2.0,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                          if (postData['WebsiteLink'] != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("Website: "),
+                                Text(
+                                  postData['WebsiteLink'],
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                    decorationThickness: 2.0,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
                         ],
                       ),
-                      child: Center(
-                        // Center widget added
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment
-                              .center, // Center the text inside the column
-                          children: [
-                            Text(
-                              "Social Links",
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (whatsappLink != null) ...[
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text("WhatsApp: "),
-                                  Text(
-                                    whatsappLink,
-                                    style: const TextStyle(
-                                      color: Colors.blue, // Blue text color
-                                      decoration: TextDecoration
-                                          .underline, // Underlined text
-                                      decorationColor:
-                                          Colors.blue, // Blue underline color
-                                      decorationThickness:
-                                          2.0, // Optional: Set thickness of underline
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                            if (facebookLink != null) ...[
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text("Facebook: "),
-                                  Text(
-                                    facebookLink,
-                                    style: const TextStyle(
-                                      color: Colors.blue, // Blue text color
-                                      decoration: TextDecoration
-                                          .underline, // Underlined text
-                                      decorationColor:
-                                          Colors.blue, // Blue underline color
-                                      decorationThickness:
-                                          2.0, // Optional: Set thickness of underline
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                            if (websiteLink != null) ...[
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text("Website: "),
-                                  Text(
-                                    websiteLink,
-                                    style: const TextStyle(
-                                      color: Colors.blue, // Blue text color
-                                      decoration: TextDecoration
-                                          .underline, // Underlined text
-                                      decorationColor:
-                                          Colors.blue, // Blue underline color
-                                      decorationThickness:
-                                          2.0, // Optional: Set thickness of underline
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ],
-                        ),
-                      ),
                     ),
+                  ),
                 const SizedBox(height: 16),
                 // Image Gallery
                 if (imageUrls.isNotEmpty)
@@ -267,6 +253,22 @@ class OpenedPostPage extends StatelessWidget {
                   ),
               ],
             ),
+          ),
+          // Floating Action Button to open chat
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    receiverUserEmail: userEmail,
+                    receiverUserID: userID,
+                  ),
+                ),
+              );
+            },
+            child: const Icon(Icons.message),
+            backgroundColor: Colors.teal,
           ),
         );
       },
