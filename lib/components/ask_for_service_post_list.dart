@@ -5,12 +5,14 @@ import 'package:service_finder_application/pages/open_post_page.dart';
 
 class AskForServicePostList extends StatelessWidget {
   final FirestoreDatabase database;
-  final String searchQuery; // Added searchQuery parameter
+  final String searchQuery;
+  final String? selectedLocation; // Added location parameter
 
   const AskForServicePostList({
     super.key,
     required this.database,
-    required this.searchQuery, // Initialize searchQuery
+    required this.searchQuery,
+    this.selectedLocation, // Initialize location parameter
   });
 
   @override
@@ -35,8 +37,15 @@ class AskForServicePostList extends StatelessWidget {
 
         // Filtering posts where 'ask' == true
         final posts = snapshot.data!.docs.where((doc) {
-          final data = doc.data() as Map<String, dynamic>?; // Cast to Map
+          final data = doc.data() as Map<String, dynamic>?;
+
           if (data == null || !data.containsKey('ask') || data['ask'] != true) {
+            return false;
+          }
+
+          // Apply location filter
+          if (selectedLocation != null &&
+              data['Location'] != selectedLocation) {
             return false;
           }
 
@@ -48,7 +57,7 @@ class AskForServicePostList extends StatelessWidget {
             return message.contains(searchQuery.toLowerCase()) ||
                 username.contains(searchQuery.toLowerCase());
           }
-          return true; // Include post if searchQuery is empty
+          return true;
         }).toList();
 
         if (posts.isEmpty) {
@@ -64,32 +73,27 @@ class AskForServicePostList extends StatelessWidget {
           itemCount: posts.length,
           itemBuilder: (context, index) {
             final post = posts[index];
-            final data = post.data() as Map<String, dynamic>; // Cast to Map
+            final data = post.data() as Map<String, dynamic>;
 
             String message = data['PostMessage'];
-            String? username =
-                data['username']; // Get username instead of email
-            List<dynamic> imageUrls =
-                data['ImageUrls'] ?? []; // Retrieve the image URLs
+            String? username = data['username'];
+            List<dynamic> imageUrls = data['ImageUrls'] ?? [];
             String? thumbnailUrl = imageUrls.isNotEmpty ? imageUrls[0] : null;
-            String postId = data['post_ID']; // Fetch post_ID from the post data
+            String postId = data['post_ID'];
 
             return GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OpenedPostPage(
-                      postId: postId, // Pass post_ID to OpenedPostPage
-                    ),
+                    builder: (context) => OpenedPostPage(postId: postId),
                   ),
                 );
               },
               child: MyListTile(
                 title: message,
-                subtitle: username ?? 'Unknown user', // Display username
-                leadingImage:
-                    thumbnailUrl, // Display the first image as thumbnail
+                subtitle: username ?? 'Unknown user',
+                leadingImage: thumbnailUrl,
               ),
             );
           },

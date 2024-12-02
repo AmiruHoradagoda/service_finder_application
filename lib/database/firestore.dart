@@ -39,7 +39,8 @@ class FirestoreDatabase {
     String? websiteLink,
     List<String>? imageUrls,
     required String userId,
-    required String postId, required String location,
+    required String postId,
+    required String location, // Make sure the location is passed here
   }) async {
     try {
       // Fetch the username of the user
@@ -51,12 +52,12 @@ class FirestoreDatabase {
       // Use the document ID as the post_ID
       String postId = docRef.id;
 
-      // Add the post data with post_ID, user_ID, and username included
+      // Add the post data with post_ID, user_ID, username, and location included
       await docRef.set({
         'post_ID': postId,
         'UserEmail': user?.email,
         'UserID': userId,
-        'username': username, 
+        'username': username,
         'PostMessage': message,
         'Description': description,
         'Mobile1': mobile1,
@@ -65,14 +66,16 @@ class FirestoreDatabase {
         'WhatsappLink': whatsappLink,
         'FacebookLink': facebookLink,
         'WebsiteLink': websiteLink,
-        'ImageUrls': imageUrls, 
+        'ImageUrls': imageUrls,
+        'Location': location, // Ensure this field is added to Firestore
         'TimeStamp': Timestamp.now(),
-        'ask': isAsk, // Field to differentiate between Ask and Provider posts
+        'ask': isAsk, // Field to differentiate between Ask and Provide posts
       });
     } catch (e) {
       print("Error adding post: $e");
     }
   }
+
 
   // Method to get a post by post_ID
   Future<DocumentSnapshot> getPostById(String postId) async {

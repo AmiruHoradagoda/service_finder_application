@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/components/my_list_tile.dart';
-import 'package:service_finder_application/pages/open_post_page.dart';
+import 'package:service_finder_application/pages/edit_profile_page.dart'; // Import for edit profile
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,10 +11,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // current logged-in user
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
-  // future to fetch user details
+  // Fetch user details
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
     return await FirebaseFirestore.instance
         .collection("Users")
@@ -23,7 +21,7 @@ class _ProfilePageState extends State<ProfilePage> {
         .get();
   }
 
-  // future to fetch posts created by the user
+  // Fetch user posts
   Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts() async {
     return await FirebaseFirestore.instance
         .collection("Posts")
@@ -31,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
         .get();
   }
 
-  // Function to delete a post
+  // Function to delete post
   void _deletePost(BuildContext context, String postId) async {
     showDialog(
       context: context,
@@ -41,135 +39,29 @@ class _ProfilePageState extends State<ProfilePage> {
           content: const Text("Are you sure you want to delete this post?"),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context), // Cancel
-              child: Text(
-                "Cancel",
-                style: TextStyle(color: Colors.grey[700]),
-              ),
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel", style: TextStyle(color: Colors.grey[700])),
             ),
             TextButton(
               onPressed: () async {
                 try {
-                  // Delete the post
                   await FirebaseFirestore.instance
                       .collection("Posts")
                       .doc(postId)
                       .delete();
 
-                  // Show confirmation message
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Post deleted successfully!")),
                   );
-
-                  // Refresh the posts list after deletion
-                  setState(
-                      () {}); // Triggers a rebuild of the page to show the updated list of posts
-                  Navigator.pop(context); // Close the confirmation dialog
+                  setState(() {});
+                  Navigator.pop(context);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Error deleting post: $e")),
                   );
                 }
               },
-              child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Function to update password
-  void _changePassword(BuildContext context) async {
-    final TextEditingController currentPasswordController =
-        TextEditingController();
-    final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmNewPasswordController =
-        TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Change Password'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: currentPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Current Password',
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: newPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'New Password',
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: confirmNewPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm New Password',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (newPasswordController.text !=
-                    confirmNewPasswordController.text) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Passwords do not match!")),
-                  );
-                } else {
-                  try {
-                    final cred = EmailAuthProvider.credential(
-                        email: currentUser!.email!,
-                        password: currentPasswordController.text);
-
-                    // Re-authenticate user
-                    await currentUser!.reauthenticateWithCredential(cred);
-
-                    // Update password
-                    await currentUser!
-                        .updatePassword(newPasswordController.text);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text("Password changed successfully!")),
-                    );
-                    Navigator.pop(context);
-                  } on FirebaseAuthException catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text(e.message ?? "Error updating password")),
-                    );
-                  }
-                }
-              },
-              child: Text(
-                'Change',
-                style: TextStyle(color: Colors.grey[700]),
-              ),
+              child: Text("Delete", style: TextStyle(color: Colors.grey[700])),
             ),
           ],
         );
@@ -180,13 +72,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text("Profile"),
-        backgroundColor: Colors.teal,
-        elevation: 0,
-      ),
+      backgroundColor:
+          Theme.of(context).colorScheme.surface, // Theme-based surface color
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        // User details future
         future: getUserDetails(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -199,63 +88,64 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Center(
                 child: Column(
                   children: [
-                    const SizedBox(height: 25),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      padding: const EdgeInsets.all(20),
-                      child: const Icon(
-                        Icons.person,
-                        size: 64,
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10, top: 10),
+                      child: Row(
+                        children: [BackButton()],
                       ),
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
+                    // Profile Image Section
+                    GestureDetector(
+                      onTap: () {
+                        // You can add logic to update the profile image
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(
+                          user?['profileImage'] ??
+                              'https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Text(
-                      user!['username'],
-                      style: const TextStyle(
+                      user?['username'] ?? 'User Name',
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.color, // Theme-based text color
                       ),
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 10),
                     Text(
-                      user['email'],
+                      user?['email'] ?? 'Email Address',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () => _changePassword(context),
-                      child: Text(
-                        "Change Password",
-                        style: TextStyle(color: Colors.grey[800]),
-                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditProfilePage(
+                                userData: user), // Edit Profile Screen
+                          ),
+                        );
+                      },
+                      child: const Text("Edit Profile"),
                     ),
                     const SizedBox(height: 30),
-                    const Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Text(
-                          "My Posts",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                            width: 10), // Optional: space between text and line
-                        Expanded(
-                          child: Divider(
-                            thickness: 1, // Line thickness
-                            color: Colors.grey, // Line color
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Display posts
+                    // Posts Section
+                    const Text("My Posts",
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    const Divider(thickness: 1),
                     FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      // Fetch user posts
                       future: getUserPosts(),
                       builder: (context, postsSnapshot) {
                         if (postsSnapshot.connectionState ==
@@ -271,41 +161,30 @@ class _ProfilePageState extends State<ProfilePage> {
                               itemCount: posts.length,
                               itemBuilder: (context, index) {
                                 final post = posts[index];
-                                final data = post.data(); // Cast to Map
-
+                                final data = post.data();
+                                String postId = data['post_ID'];
                                 String message = data['PostMessage'];
-                                String? username = data[
-                                    'username']; // Get username instead of email
+                                String? username = data['username'];
                                 List<dynamic> imageUrls =
                                     data['ImageUrls'] ?? [];
                                 String? thumbnailUrl =
                                     imageUrls.isNotEmpty ? imageUrls[0] : null;
-                                String postId = data[
-                                    'post_ID']; // Fetch post_ID from the post data
 
                                 return GestureDetector(
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => OpenedPostPage(
-                                          postId:
-                                              postId, // Pass post_ID to OpenedPostPage
-                                        ),
-                                      ),
-                                    );
+                                    // Navigate to post details
                                   },
-                                  child: MyListTile(
-                                    title: message,
-                                    subtitle: username ?? 'Unknown user',
-                                    leadingImage: thumbnailUrl,
+                                  child: ListTile(
+                                    title: Text(message),
+                                    subtitle: Text(username ?? 'Unknown user'),
+                                    leading: thumbnailUrl != null
+                                        ? Image.network(thumbnailUrl)
+                                        : null,
                                     trailing: IconButton(
                                       icon: const Icon(Icons.delete,
                                           color: Colors.red),
-                                      onPressed: () {
-                                        _deletePost(
-                                            context, postId); // Delete post
-                                      },
+                                      onPressed: () =>
+                                          _deletePost(context, postId),
                                     ),
                                   ),
                                 );
