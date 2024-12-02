@@ -34,6 +34,9 @@ class MyDrawer extends StatelessWidget {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (snapshot.hasData) {
             var user = snapshot.data!.data();
+            String profileImageUrl = user?['profileImage'] ??
+                'https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png'; // Default if null
+
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -55,10 +58,10 @@ class MyDrawer extends StatelessWidget {
                       child: Row(
                         children: [
                           // Circular Avatar with Shadow
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 45,
                             backgroundImage: NetworkImage(
-                                'https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png'), // Replace with user's avatar URL
+                                profileImageUrl), // User profile image
                             backgroundColor: Colors.transparent,
                           ),
                           const SizedBox(
