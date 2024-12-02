@@ -9,6 +9,7 @@ class OpenedPostPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FirestoreDatabase database = FirestoreDatabase();
+    final theme = Theme.of(context);
 
     return FutureBuilder(
       future: database.getPostById(postId),
@@ -20,18 +21,23 @@ class OpenedPostPage extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          return const Center(
-            child: Text("Error loading post details"),
+          return Center(
+            child: Text(
+              "Error loading post details",
+              style: theme.textTheme.bodyLarge,
+            ),
           );
         }
 
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Center(
-            child: Text("Post not found"),
+          return Center(
+            child: Text(
+              "Post not found",
+              style: theme.textTheme.bodyLarge,
+            ),
           );
         }
 
-        // Fetching post data
         final postData = snapshot.data!.data() as Map<String, dynamic>;
         String postMessage = postData['PostMessage'] ?? '';
         String description = postData['Description'] ?? '';
@@ -42,20 +48,204 @@ class OpenedPostPage extends StatelessWidget {
         String? whatsappLink = postData['WhatsappLink'];
         String? facebookLink = postData['FacebookLink'];
         String? websiteLink = postData['WebsiteLink'];
-        bool isAsk = postData['ask'] ?? false;
         List<dynamic> imageUrls = postData['ImageUrls'] ?? [];
+        bool ask = postData['ask'] ?? false;
 
         return Scaffold(
           appBar: AppBar(
             title: const Text("Post Details"),
+            backgroundColor: theme.colorScheme.secondary,
+            foregroundColor: theme.colorScheme.onPrimary,
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Display the images
-                if (imageUrls.isNotEmpty) ...[
+                // Title Section
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.shadow.withOpacity(0.1),
+                        blurRadius: 6,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          postMessage,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "by $username",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.inversePrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Description Section
+                Text(
+                  description,
+                  style: theme.textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 16),
+                // Contact Section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.shadow.withOpacity(0.1),
+                        blurRadius: 6,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    // Center widget added
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment
+                          .center, // Center the text inside the column
+                      children: [
+                        Text(
+                          "Contact",
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text("Address: $address"),
+                        const SizedBox(height: 8),
+                        Text("Mobile No: $mobile1"),
+                        if (mobile2 != null) ...[
+                          const SizedBox(height: 8),
+                          Text("Mobile No: $mobile2"),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+                // Social Links Section - Visible only if `ask` is false
+                if (!ask &&
+                    (whatsappLink != null ||
+                        facebookLink != null ||
+                        websiteLink != null))
+                  if (!ask &&
+                      (whatsappLink != null ||
+                          facebookLink != null ||
+                          websiteLink != null))
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.shadow.withOpacity(0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        // Center widget added
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment
+                              .center, // Center the text inside the column
+                          children: [
+                            Text(
+                              "Social Links",
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (whatsappLink != null) ...[
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("WhatsApp: "),
+                                  Text(
+                                    whatsappLink,
+                                    style: const TextStyle(
+                                      color: Colors.blue, // Blue text color
+                                      decoration: TextDecoration
+                                          .underline, // Underlined text
+                                      decorationColor:
+                                          Colors.blue, // Blue underline color
+                                      decorationThickness:
+                                          2.0, // Optional: Set thickness of underline
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                            if (facebookLink != null) ...[
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("Facebook: "),
+                                  Text(
+                                    facebookLink,
+                                    style: const TextStyle(
+                                      color: Colors.blue, // Blue text color
+                                      decoration: TextDecoration
+                                          .underline, // Underlined text
+                                      decorationColor:
+                                          Colors.blue, // Blue underline color
+                                      decorationThickness:
+                                          2.0, // Optional: Set thickness of underline
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                            if (websiteLink != null) ...[
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("Website: "),
+                                  Text(
+                                    websiteLink,
+                                    style: const TextStyle(
+                                      color: Colors.blue, // Blue text color
+                                      decoration: TextDecoration
+                                          .underline, // Underlined text
+                                      decorationColor:
+                                          Colors.blue, // Blue underline color
+                                      decorationThickness:
+                                          2.0, // Optional: Set thickness of underline
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                const SizedBox(height: 16),
+                // Image Gallery
+                if (imageUrls.isNotEmpty)
                   SizedBox(
                     height: 200,
                     child: ListView.builder(
@@ -64,80 +254,17 @@ class OpenedPostPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Image.network(imageUrls[index]),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              imageUrls[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         );
                       },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-                // Post Message
-                Text(
-                  postMessage,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                // Description
-                Text(
-                  "Description: $description",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                // Address
-                Text(
-                  "Address: $address",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                // Mobile Numbers
-                Text(
-                  "Mobile 1: $mobile1",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                if (mobile2 != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    "Mobile 2: $mobile2",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-                const SizedBox(height: 8),
-                // User ID
-                Text(
-                  "User Name: $username",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                // Links
-                if (whatsappLink != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    "WhatsApp: $whatsappLink",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-                if (facebookLink != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    "Facebook: $facebookLink",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-                if (websiteLink != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    "Website: $websiteLink",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                // Ask/Provider
-                Text(
-                  "Type: ${isAsk ? 'Service Request' : 'Service Provider'}",
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
               ],
             ),
           ),
