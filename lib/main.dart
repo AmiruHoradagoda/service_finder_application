@@ -27,10 +27,11 @@ class RootApp extends StatelessWidget {
       home: const AuthPage(),
       theme: lightMode,
       darkTheme: darkMode,
+      themeMode: ThemeMode.system,
       routes: {
         '/login_register_page': (context) => const LoginOrRegister(),
         '/home_page': (context) => HomePage(),
-        '/profile_page': (context) => ProfilePage(),
+        '/profile_page': (context) => const ProfilePage(),
         '/users_page': (context) => const UsersPage(),
       },
     );

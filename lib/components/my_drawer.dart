@@ -22,8 +22,10 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.blue[50], // Light blue background for the drawer
+      backgroundColor:
+          Theme.of(context).colorScheme.surface, // Theme-based surface color
       child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        // Fetch user details
         future: getUserDetails(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -42,8 +44,9 @@ class MyDrawer extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           vertical: 20, horizontal: 20),
                       decoration: BoxDecoration(
-                        color: Colors
-                            .blue[700], // Blue background for profile section
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary, // Dynamic primary color
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(30),
                           bottomRight: Radius.circular(30),
@@ -66,18 +69,23 @@ class MyDrawer extends StatelessWidget {
                             children: [
                               Text(
                                 user?['username'] ?? 'User Name',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white, // White text for name
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color, // Updated text color for bodyLarge
                                 ),
                               ),
                               Text(
                                 user?['email'] ?? 'Email Address',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color:
-                                      Colors.white70, // Light white for email
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color, // Updated text color for bodyMedium
                                 ),
                               ),
                             ],
@@ -160,12 +168,17 @@ class MyDrawer extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: Colors.blue[800], // Icon color matching the blue theme
+          color: Theme.of(context)
+              .colorScheme
+              .secondary, // Dynamic secondary icon color
         ),
         title: Text(
           title,
           style: TextStyle(
-            color: Colors.blue[800], // Text color matching the blue theme
+            color: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.color, // Updated text color for bodyLarge
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
