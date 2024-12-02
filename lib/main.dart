@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/auth/auth.dart';
@@ -15,12 +14,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    DevicePreview(
-      enabled: true, // Enable or disable DevicePreview here
-      builder: (context) => const RootApp(), // Wrap your app
-    ),
-  );
+  runApp(const RootApp());
 }
 
 class RootApp extends StatelessWidget {
@@ -30,11 +24,6 @@ class RootApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery:
-          true, // Allows DevicePreview to simulate different screen sizes
-      locale:
-          DevicePreview.locale(context), // Sets the locale for DevicePreview
-      builder: DevicePreview.appBuilder, // Enables the preview builder
       home: const AuthPage(),
       theme: lightMode,
       darkTheme: darkMode,

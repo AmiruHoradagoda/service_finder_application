@@ -39,7 +39,7 @@ class FirestoreDatabase {
     String? websiteLink,
     List<String>? imageUrls,
     required String userId,
-    required String postId,
+    required String postId, required String location,
   }) async {
     try {
       // Fetch the username of the user
