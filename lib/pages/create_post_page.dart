@@ -138,12 +138,11 @@ class _PostPageState extends State<PostPage> {
           isAskPost
               ? "Create new 'Ask for Service' post."
               : "Create new 'Provide Service' post.",
-          style: TextStyle(
-              fontSize: 20,
-              color: Theme.of(context).colorScheme.inversePrimary),
+          style: const TextStyle(
+            fontSize: 20,
+          ),
         ),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.teal,
         elevation: 0,
       ),
       body: Padding(
