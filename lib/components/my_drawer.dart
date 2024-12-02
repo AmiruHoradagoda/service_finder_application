@@ -58,10 +58,10 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 25.0),
                 child: ListTile(
                   leading: Icon(
-                    Icons.group,
+                    Icons.message,
                     color: Theme.of(context).colorScheme.inversePrimary,
                   ),
-                  title: const Text("U S E R S"),
+                  title: const Text("M E S S A G E S"),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/users_page');

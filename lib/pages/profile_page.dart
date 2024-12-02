@@ -181,6 +181,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: Text("Profile"),
+        backgroundColor: Colors.teal,
+        elevation: 0,
+      ),
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: getUserDetails(),
         builder: (context, snapshot) {
@@ -194,12 +199,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Center(
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 10, top: 10),
-                      child: Row(
-                        children: [BackButton()],
-                      ),
-                    ),
                     const SizedBox(height: 25),
                     Container(
                       decoration: BoxDecoration(
