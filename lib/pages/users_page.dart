@@ -12,7 +12,7 @@ class UsersPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text("Messages"),
+        title: const Text("Messages"),
         backgroundColor: Colors.teal,
         elevation: 0,
       ),

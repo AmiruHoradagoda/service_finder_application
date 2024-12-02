@@ -266,6 +266,7 @@ class _PostPageState extends State<PostPage> {
                   : MyButton(
                       onTap: () => postMessage(context),
                       text: "Post",
+                      color: Colors.teal,
                     ),
             ],
           ),
