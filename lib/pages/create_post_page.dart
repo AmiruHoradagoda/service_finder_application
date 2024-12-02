@@ -77,7 +77,6 @@ class _PostPageState extends State<PostPage> {
           String downloadUrl = await storageRef.getDownloadURL();
           imageUrls.add(downloadUrl);
         } catch (e) {
-          // ignore: avoid_print
           print("Error uploading image: $e");
         }
       }
@@ -106,6 +105,7 @@ class _PostPageState extends State<PostPage> {
       List<String> imageUrls = await uploadImages(images);
       String userId = FirebaseAuth.instance.currentUser!.uid;
 
+      // Add the post to Firestore, including the selected location
       await database.addPost(
         postId: postId,
         userId: userId,
@@ -118,7 +118,7 @@ class _PostPageState extends State<PostPage> {
         whatsappLink: whatsappLink,
         facebookLink: facebookLink,
         websiteLink: websiteLink,
-        location: selectedLocation!,
+        location: selectedLocation!, // Ensure the location is passed here
         imageUrls: imageUrls,
       );
 
@@ -199,74 +199,31 @@ class _PostPageState extends State<PostPage> {
               ),
               const SizedBox(height: 20),
               MyTextField(
-                hintText: "Address",
+                hintText: "Address (optional)",
                 obscureText: false,
                 controller: addressController,
                 keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 20),
-              if (isAskPost == false) ...[
-                MyTextField(
-                  hintText: "WhatsApp Link (optional)",
-                  obscureText: false,
-                  controller: whatsappLinkController,
-                  keyboardType: TextInputType.url,
-                ),
-                const SizedBox(height: 20),
-                MyTextField(
-                  hintText: "Facebook Link (optional)",
-                  obscureText: false,
-                  controller: facebookLinkController,
-                  keyboardType: TextInputType.url,
-                ),
-                const SizedBox(height: 20),
-                MyTextField(
-                  hintText: "Website Link (optional)",
-                  obscureText: false,
-                  controller: websiteLinkController,
-                  keyboardType: TextInputType.url,
-                ),
-                const SizedBox(height: 20),
-              ],
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: images.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => pickImage(index),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: images[index] != null
-                          ? Image.file(
-                              images[index]!,
-                              fit: BoxFit.cover,
-                            )
-                          : Center(
-                              child: Text(
-                                "Select Image ${index + 1}",
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ),
-                    ),
-                  );
-                },
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => pickImage(0),
+                    child: const Text("Pick Image 1"),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => pickImage(1),
+                    child: const Text("Pick Image 2"),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               isLoading
                   ? const CircularProgressIndicator()
                   : MyButton(
                       onTap: () => postMessage(context),
-                      text: "Post",
+                      text: isAskPost ? 'Post Ask' : 'Post Provide',
                     ),
             ],
           ),
