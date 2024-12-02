@@ -178,15 +178,66 @@ class OpenedPostPage extends StatelessWidget {
                             ),
                             if (whatsappLink != null) ...[
                               const SizedBox(height: 8),
-                              Text("WhatsApp: $whatsappLink"),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("WhatsApp: "),
+                                  Text(
+                                    whatsappLink,
+                                    style: const TextStyle(
+                                      color: Colors.blue, // Blue text color
+                                      decoration: TextDecoration
+                                          .underline, // Underlined text
+                                      decorationColor:
+                                          Colors.blue, // Blue underline color
+                                      decorationThickness:
+                                          2.0, // Optional: Set thickness of underline
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                             if (facebookLink != null) ...[
                               const SizedBox(height: 8),
-                              Text("Facebook: $facebookLink"),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("Facebook: "),
+                                  Text(
+                                    facebookLink,
+                                    style: const TextStyle(
+                                      color: Colors.blue, // Blue text color
+                                      decoration: TextDecoration
+                                          .underline, // Underlined text
+                                      decorationColor:
+                                          Colors.blue, // Blue underline color
+                                      decorationThickness:
+                                          2.0, // Optional: Set thickness of underline
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                             if (websiteLink != null) ...[
                               const SizedBox(height: 8),
-                              Text("Website: $websiteLink"),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("Website: "),
+                                  Text(
+                                    websiteLink,
+                                    style: const TextStyle(
+                                      color: Colors.blue, // Blue text color
+                                      decoration: TextDecoration
+                                          .underline, // Underlined text
+                                      decorationColor:
+                                          Colors.blue, // Blue underline color
+                                      decorationThickness:
+                                          2.0, // Optional: Set thickness of underline
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ],
                         ),
