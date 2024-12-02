@@ -37,70 +37,105 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size; // Get screen size
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.person,
-                  size: 80,
-                  color: Theme.of(context).colorScheme.inversePrimary,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image at the top covering the screen width (Full width, 35% height of screen)
+            Container(
+              width: size.width,
+              height: size.height * 0.35, // 35% of the screen height
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover, // Image will cover the container
+                  image: AssetImage('assets/images/service-provider-login.png'),
                 ),
-                const SizedBox(height: 25),
-                const Text("S E R V I C E   F I N D E R",
-                    style: TextStyle(fontSize: 20)),
-                const SizedBox(height: 25),
-                MyTextField(
-                  hintText: "Email",
-                  obscureText: false,
-                  controller: emailController,
-                  keyboardType:
-                      TextInputType.emailAddress, // Added keyboardType
-                  icon: const Icon(Icons.email, color: Colors.grey),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  hintText: "Password",
-                  obscureText: true,
-                  controller: passwordController,
-                  keyboardType: TextInputType.text, // Added keyboardType
-                  icon: const Icon(Icons.lock, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 25),
-                MyButton(onTap: login, text: "Login"),
-                const SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account?"),
-                    GestureDetector(
-                      onTap: widget.onTap,
-                      child: const Text(
-                        " Register Here.",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20), // Adjust space from top
+                  const Text(
+                    "Sign In",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87, // Dark text for readability
+                    ),
+                  ),
+                  const Text(
+                    "Connect With Your User Account",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54, // Lighter text for subheading
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  MyTextField(
+                    hintText: "Email",
+                    obscureText: false,
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    icon: const Icon(Icons.email, color: Colors.blue),
+                  ),
+                  const SizedBox(height: 15),
+                  MyTextField(
+                    hintText: "Password",
+                    obscureText: true,
+                    controller: passwordController,
+                    keyboardType: TextInputType.text,
+                    icon: const Icon(Icons.lock, color: Colors.blue),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  MyButton(
+                    onTap: login,
+                    text: "Login",
+                    color: Colors.blue, 
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Don't have an account?"),
+                      GestureDetector(
+                        onTap: widget.onTap,
+                        child: const Text(
+                          " Register Here.",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

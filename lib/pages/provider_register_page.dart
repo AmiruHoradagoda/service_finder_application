@@ -19,7 +19,6 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  final TextEditingController nicController = TextEditingController();
 
   bool _agreedToTerms = false;
 
@@ -33,7 +32,7 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
 
     if (passwordController.text != confirmPasswordController.text) {
       Navigator.pop(context);
-      displayMessageToUser("Passwords don't Match!", context);
+      displayMessageToUser("Passwords don't match!", context);
     } else if (!_agreedToTerms) {
       Navigator.pop(context);
       displayMessageToUser(
@@ -66,14 +65,12 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
     if (userCredential != null && userCredential.user != null) {
       await FirebaseFirestore.instance
           .collection("Users")
-          .doc(userCredential.user!
-              .email) // You can still use email as document ID or switch to user.uid
+          .doc(userCredential.user!.email)
           .set({
-        'user_ID': userCredential.user!.uid, // Add the user_ID field
+        'user_ID': userCredential.user!.uid,
         'email': userCredential.user!.email,
         'username': userNameController.text,
-        'nic': nicController.text,
-        'provider': true,
+        'provider': true, // Mark as a provider
       });
     }
   }
@@ -88,67 +85,90 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
           padding: const EdgeInsets.all(25.0),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "B E C O M E   A   P R O V I D E R",
-                  style: TextStyle(fontSize: 20),
+                  "Provider Registration",
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 25),
                 MyTextField(
                   hintText: "User Name",
                   obscureText: false,
                   controller: userNameController,
-                  keyboardType: TextInputType.text, // Added keyboardType
+                  keyboardType: TextInputType.text,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 MyTextField(
                   hintText: "Email",
                   obscureText: false,
                   controller: emailController,
-                  keyboardType:
-                      TextInputType.emailAddress, // Added keyboardType
+                  keyboardType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 MyTextField(
                   hintText: "Password",
                   obscureText: true,
                   controller: passwordController,
-                  keyboardType: TextInputType.text, // Added keyboardType
+                  keyboardType: TextInputType.text,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 MyTextField(
                   hintText: "Confirm Password",
                   obscureText: true,
                   controller: confirmPasswordController,
-                  keyboardType: TextInputType.text, // Added keyboardType
+                  keyboardType: TextInputType.text,
                 ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  hintText: "NIC Number",
-                  obscureText: false,
-                  controller: nicController,
-                  keyboardType: TextInputType.text, // Added keyboardType
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Checkbox(
                       value: _agreedToTerms,
-                      checkColor: Colors.grey.shade900,
                       onChanged: (value) {
                         setState(() {
                           _agreedToTerms = value!;
                         });
                       },
                     ),
-                    const Text("Agreed to the terms and conditions")
+                    const Expanded(
+                      child: Text(
+                        "I agree to the terms and conditions",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                MyButton(onTap: registerUser, text: "Register"),
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
+                MyButton(
+                  onTap: registerUser,
+                  text: "Register",
+                  color: Colors.blue,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Already have an account?"),
+                    GestureDetector(
+                      onTap: () {
+                        // Handle navigation to login page
+                      },
+                      child: const Text(
+                        " Login Here.",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
