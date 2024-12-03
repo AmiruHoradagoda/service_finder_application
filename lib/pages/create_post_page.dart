@@ -1,11 +1,12 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:service_finder_application/components/my_button.dart';
 import 'package:service_finder_application/components/my_textfield.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:service_finder_application/database/firestore.dart';
 import 'package:service_finder_application/helper/locations.dart';
 
@@ -141,6 +142,9 @@ class _PostPageState extends State<PostPage> {
           style: const TextStyle(
             fontSize: 20,
           ),
+          overflow: TextOverflow
+              .ellipsis, // Truncates text with ellipsis if it overflows
+          maxLines: 2, // Allows title to wrap to the next line
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
