@@ -18,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
 
   void login() async {
+    // Show loading dialog
     showDialog(
       context: context,
       builder: (context) => const Center(child: CircularProgressIndicator()),
@@ -28,9 +29,11 @@ class _LoginPageState extends State<LoginPage> {
         email: emailController.text,
         password: passwordController.text,
       );
-      if (context.mounted) Navigator.pop(context);
+      // Close the dialog if the context is still mounted
+      if (mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      Navigator.pop(context);
+      // Close the dialog safely if the context is still mounted
+      if (mounted) Navigator.pop(context);
       displayMessageToUser(e.code, context);
     }
   }
@@ -113,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                   MyButton(
                     onTap: login,
                     text: "Login",
-                    color: Colors.blue, 
+                    color: Colors.blue,
                   ),
                   const SizedBox(height: 30),
                   Row(
