@@ -72,8 +72,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).colorScheme.surface, // Theme-based surface color
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: const Text("Profile"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        elevation: 0,
+      ),
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         // User details future
         future: getUserDetails(),
@@ -88,12 +92,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Center(
                 child: Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 10, top: 10),
-                      child: Row(
-                        children: [BackButton()],
-                      ),
-                    ),
                     const SizedBox(height: 20),
                     // Profile Image Section
                     GestureDetector(

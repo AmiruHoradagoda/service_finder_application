@@ -39,7 +39,7 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.receiverUserEmail),
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
       ),
       body: Padding(
@@ -143,7 +143,11 @@ class _ChatPageState extends State<ChatPage> {
           ),
           IconButton(
             onPressed: sendMessage,
-            icon: Icon(Icons.send, color: Colors.teal),
+            icon: Icon(
+              Icons.send,
+              size: 40,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ],
       ),

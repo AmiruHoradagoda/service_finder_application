@@ -56,7 +56,7 @@ class OpenedPostPage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text("Post Details"),
-            backgroundColor: Colors.teal,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: theme.colorScheme.onPrimary,
           ),
           body: SingleChildScrollView(
@@ -267,8 +267,8 @@ class OpenedPostPage extends StatelessWidget {
                 ),
               );
             },
+            backgroundColor: Theme.of(context).colorScheme.primary,
             child: const Icon(Icons.message),
-            backgroundColor: Colors.teal,
           ),
         );
       },

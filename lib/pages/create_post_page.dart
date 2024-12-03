@@ -142,7 +142,7 @@ class _PostPageState extends State<PostPage> {
             fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
       ),
       body: Padding(
@@ -179,7 +179,8 @@ class _PostPageState extends State<PostPage> {
                   });
                 },
                 decoration: const InputDecoration(
-                  hintText: "Select Location",
+                  border: OutlineInputBorder(),
+                  labelText: "Select Location",
                 ),
               ),
               const SizedBox(height: 20),
@@ -204,26 +205,46 @@ class _PostPageState extends State<PostPage> {
                 keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => pickImage(0),
-                    child: const Text("Pick Image 1"),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () => pickImage(1),
-                    child: const Text("Pick Image 2"),
-                  ),
-                ],
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: images.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () => pickImage(index),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: images[index] != null
+                          ? Image.file(
+                              images[index]!,
+                              fit: BoxFit.cover,
+                            )
+                          : Center(
+                              child: Text(
+                                "Select Image ${index + 1}",
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 20),
               isLoading
                   ? const CircularProgressIndicator()
                   : MyButton(
                       onTap: () => postMessage(context),
-                      text: isAskPost ? 'Post Ask' : 'Post Provide',
-
+                      text: "Post",
+                      color: Theme.of(context).colorScheme.primary,
                     ),
             ],
           ),

@@ -19,7 +19,6 @@ class _HomePageState extends State<HomePage> {
   String _searchQuery = "";
   String? _selectedLocation; // Store the selected location
 
-  // Handle the tab change (Providers vs Ask for Service)
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -27,14 +26,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Handle the location change from the dropdown
   void _onLocationChanged(String? value) {
     setState(() {
-      _selectedLocation = value; // Update the selected location
+      _selectedLocation = value;
     });
   }
 
-  // Method to filter posts based on search and location
   List<Map<String, dynamic>> _filterPosts(List<Map<String, dynamic>> posts) {
     return posts.where((post) {
       final matchesSearch = _searchQuery.isEmpty ||
@@ -53,34 +50,43 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
-        backgroundColor: Colors.transparent,
-        foregroundColor: Theme.of(context).colorScheme.inversePrimary,
-        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        elevation: 2,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(
-              100.0), // Increased height for both search and dropdown
+          preferredSize: const Size.fromHeight(50.0),
           child: Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Search TextField
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Search posts...",
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none,
+                // Search TextField with enhanced styling
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(30.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Search posts...",
+                      prefixIcon: const Icon(Icons.search),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 16.0),
                     ),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface,
                   ),
                 ),
               ],
@@ -88,15 +94,22 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
-          // Location Dropdown placed at the top-right corner
+          // Styled DropdownButton
           Container(
-            padding: const EdgeInsets.all(1.0),
+            margin: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(20.0),
+            ),
             child: DropdownButton<String>(
               value: _selectedLocation,
               hint: const Text('Location'),
+              icon: const Icon(Icons.location_on),
+              underline: const SizedBox(),
               items: [
-                'Clear Location', // The "Clear Location" option
-                ...locations, // Predefined locations
+                'Clear Location',
+                ...locations,
               ].map((location) {
                 return DropdownMenuItem<String>(
                   value: location,
@@ -108,13 +121,12 @@ class _HomePageState extends State<HomePage> {
               onChanged: (value) {
                 if (value == 'Clear Location') {
                   setState(() {
-                    _selectedLocation = null; // Clear the selected location
+                    _selectedLocation = null;
                   });
                 } else {
-                  _onLocationChanged(value); // Handle regular location change
+                  _onLocationChanged(value);
                 }
               },
-              underline: const SizedBox(), // Hide the default underline
             ),
           ),
         ],
@@ -123,18 +135,23 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Expanded(
-            child: _selectedIndex == 0
-                ? ProvidersPostList(
-                    database: widget.database,
-                    searchQuery: _searchQuery,
-                    selectedLocation: _selectedLocation,
-                  )
-                : AskForServicePostList(
-                    database: widget.database,
-                    searchQuery: _searchQuery,
-                    selectedLocation: _selectedLocation,
-                  ),
-          )
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: _selectedIndex == 0
+                  ? ProvidersPostList(
+                      key: const ValueKey(0),
+                      database: widget.database,
+                      searchQuery: _searchQuery,
+                      selectedLocation: _selectedLocation,
+                    )
+                  : AskForServicePostList(
+                      key: const ValueKey(1),
+                      database: widget.database,
+                      searchQuery: _searchQuery,
+                      selectedLocation: _selectedLocation,
+                    ),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -150,9 +167,11 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.grey.shade900,
-          unselectedItemColor: Theme.of(context).colorScheme.secondary,
+          selectedItemColor: Colors.blue.shade900,
+          unselectedItemColor: Colors.grey,
           onTap: _onItemTapped,
+          backgroundColor: Theme.of(context).colorScheme.background,
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );

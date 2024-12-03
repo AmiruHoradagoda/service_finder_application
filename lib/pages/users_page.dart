@@ -13,7 +13,7 @@ class UsersPage extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text("Messages"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
       ),
       body: SafeArea(
