@@ -6,11 +6,13 @@ import 'package:service_finder_application/pages/open_post_page.dart';
 class ProvidersPostList extends StatelessWidget {
   final FirestoreDatabase database;
   final String searchQuery; // Added searchQuery parameter
+  final String? selectedLocation; // Added location parameter
 
   const ProvidersPostList({
     super.key,
     required this.database,
     required this.searchQuery, // Initialize searchQuery
+    this.selectedLocation, // Initialize location parameter
   });
 
   @override
@@ -39,6 +41,12 @@ class ProvidersPostList extends StatelessWidget {
           if (data == null ||
               !data.containsKey('ask') ||
               data['ask'] != false) {
+            return false;
+          }
+
+          // Apply location filter
+          if (selectedLocation != null &&
+              data['Location'] != selectedLocation) {
             return false;
           }
 
