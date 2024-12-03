@@ -115,8 +115,8 @@ class MyDrawer extends StatelessWidget {
                     ),
                     _buildListTile(
                       context,
-                      icon: Icons.group,
-                      title: 'U S E R S',
+                      icon: Icons.chat,
+                      title: 'M E S S A G E S',
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, '/users_page');
