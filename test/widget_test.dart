@@ -72,7 +72,7 @@ void main() {
   }
 
   Future<void> openProvider(WidgetTester tester) async {
-    await tester.tap(find.text(' Register Here.'));
+    await tester.tap(find.text('Create an account'));
     await tester.pumpAndSettle();
     await tester.tap(find.text(' Become a Provider.'));
     await tester.pumpAndSettle();
@@ -111,7 +111,7 @@ void main() {
     expect(find.byType(LoginPage), findsOneWidget);
     expect(auth.navigatorKey.currentState!.canPop(), isFalse);
 
-    await tester.tap(find.text(' Register Here.'));
+    await tester.tap(find.text('Create an account'));
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
@@ -184,9 +184,13 @@ void main() {
       throw FirebaseAuthException(code: 'invalid-credential');
     });
     await tester.pumpAndSettle();
-    expect(find.text('invalid-credential'), findsOneWidget);
+    expect(find.text('Unable to sign in'), findsOneWidget);
+    expect(
+        find.text(
+            'The email or password is incorrect. Check your details and try again.'),
+        findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    auth.navigatorKey.currentState!.pop();
+    await tester.tap(find.text('Got it'));
     await tester.pumpAndSettle();
     expect(find.byType(LoginPage), findsOneWidget);
     expect(auth.navigatorKey.currentState!.canPop(), isFalse);
