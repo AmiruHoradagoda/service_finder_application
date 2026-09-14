@@ -243,8 +243,11 @@ class OpenedPostPage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              imageUrls[index],
+                            child: Image(
+                              image: imageUrls[index].startsWith('assets/')
+                                  ? AssetImage(imageUrls[index])
+                                  : NetworkImage(imageUrls[index])
+                                      as ImageProvider,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -256,17 +259,19 @@ class OpenedPostPage extends StatelessWidget {
             ),
           ),
           // Floating Action Button to open chat
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              AppRoutes.openChat(
-                context,
-                receiverUserEmail: userEmail,
-                receiverUserID: userID,
-              );
-            },
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            child: const Icon(Icons.message),
-          ),
+          floatingActionButton: postId.startsWith('demo-')
+              ? null
+              : FloatingActionButton(
+                  onPressed: () {
+                    AppRoutes.openChat(
+                      context,
+                      receiverUserEmail: userEmail,
+                      receiverUserID: userID,
+                    );
+                  },
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: const Icon(Icons.message),
+                ),
         );
       },
     );

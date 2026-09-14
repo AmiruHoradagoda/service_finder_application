@@ -65,6 +65,7 @@ class ProvidersPostList extends StatelessWidget {
               },
               child: MyListTile(
                 title: message,
+                avatarImage: post.avatarUrl,
                 subtitle: username ?? 'Unknown user', // Display username
                 leadingImage:
                     thumbnailUrl, // Display the first image as thumbnail

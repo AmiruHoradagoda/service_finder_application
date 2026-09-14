@@ -9,6 +9,7 @@ class ServicePost {
     required this.isAsk,
     this.userEmail,
     this.username,
+    this.avatarUrl,
     this.description = '',
     this.mobile1 = '',
     this.mobile2,
@@ -25,6 +26,7 @@ class ServicePost {
   final String userId;
   final String? userEmail;
   final String? username;
+  final String? avatarUrl;
   final String message;
   // Missing legacy flags must not classify a post into either Home feed.
   final bool? isAsk;
@@ -46,6 +48,7 @@ class ServicePost {
         userId: data['UserID'] as String? ?? '',
         userEmail: data['UserEmail'] as String?,
         username: data['username'] as String?,
+        avatarUrl: data['avatarUrl'] as String?,
         message: data['PostMessage'] as String? ?? '',
         isAsk: data['ask'] as bool?,
         description: data['Description'] as String? ?? '',

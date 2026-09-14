@@ -1,6 +1,7 @@
 import 'package:service_finder_application/features/home/widgets/home_search_bar.dart';
 import 'package:service_finder_application/features/home/widgets/home_bottom_navigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:service_finder_application/features/home/models/post_filter.dart';
 import 'package:service_finder_application/features/home/widgets/ask_for_service_post_list.dart';
 import 'package:service_finder_application/features/home/widgets/my_drawer.dart';
@@ -17,6 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _showDemo = kDebugMode;
+  final HomeService _demoService = HomeService(demo: true);
   int _selectedIndex = 0;
   String _searchQuery = "";
   String? _selectedLocation; // Store the selected location
@@ -41,6 +44,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
+        actions: [
+          const Text('Demo data'),
+          Switch(
+            value: _showDemo,
+            onChanged: (value) => setState(() => _showDemo = value),
+          ),
+        ],
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 2,
@@ -57,13 +67,13 @@ class _HomePageState extends State<HomePage> {
               duration: const Duration(milliseconds: 300),
               child: _selectedIndex == 0
                   ? ProvidersPostList(
-                      key: const ValueKey(0),
-                      service: widget.service,
+                      key: ValueKey('providers-$_showDemo'),
+                      service: _showDemo ? _demoService : widget.service,
                       filter: filter,
                     )
                   : AskForServicePostList(
-                      key: const ValueKey(1),
-                      service: widget.service,
+                      key: ValueKey('requests-$_showDemo'),
+                      service: _showDemo ? _demoService : widget.service,
                       filter: filter,
                     ),
             ),

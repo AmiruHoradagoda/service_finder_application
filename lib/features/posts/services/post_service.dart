@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:service_finder_application/features/posts/services/demo_posts.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -77,6 +78,8 @@ class PostService {
   }
 
   Future<ServicePost?> getPostById(String postId) async {
+    final demo = await DemoPosts.find(postId);
+    if (demo != null) return demo;
     final document = await _database.collection('Posts').doc(postId).get();
     final data = document.data();
     return data == null

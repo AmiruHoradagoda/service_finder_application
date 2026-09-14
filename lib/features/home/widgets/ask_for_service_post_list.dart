@@ -65,6 +65,7 @@ class AskForServicePostList extends StatelessWidget {
               },
               child: MyListTile(
                 title: message,
+                avatarImage: post.avatarUrl,
                 subtitle: username ?? 'Unknown user',
                 leadingImage: thumbnailUrl,
               ),

@@ -1,0 +1,146 @@
+[
+  {
+    "post_ID": "demo-plumbing",
+    "UserID": "demo-user-plumbing",
+    "username": "Nimal Perera",
+    "UserEmail": "plumbing@example.com",
+    "PostMessage": "Reliable plumbing & leak repairs",
+    "ask": false,
+    "Location": "Colombo",
+    "Description": "Demo listing for UI preview.\n\nTap replacements, blocked drains and bathroom repairs. Available Monday to Saturday. Tell us about your repair for a quote.",
+    "Address": "Colombo (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_1.jpg",
+    "ImageUrls": [
+      "assets/demo/post_1.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-electrical",
+    "UserID": "demo-user-electrical",
+    "username": "Bright Spark Services",
+    "UserEmail": "electrical@example.com",
+    "PostMessage": "Home electrical installations",
+    "ask": false,
+    "Location": "Kandy",
+    "Description": "Demo listing for UI preview.\n\nLighting, ceiling fans and household wiring checks. Appointments available on weekdays.",
+    "Address": "Kandy (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_2.jpg",
+    "ImageUrls": [
+      "assets/demo/post_2.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-cleaning",
+    "UserID": "demo-user-cleaning",
+    "username": "Fresh Home Cleaning",
+    "UserEmail": "cleaning@example.com",
+    "PostMessage": "A fresh start for your home",
+    "ask": false,
+    "Location": "Galle",
+    "Description": "Demo listing for UI preview.\n\nRegular housekeeping, kitchen cleaning and move-out deep cleans. Flexible bookings for apartments and family homes.",
+    "Address": "Galle (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_3.jpg",
+    "ImageUrls": [
+      "assets/demo/post_3.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-carpentry",
+    "UserID": "demo-user-carpentry",
+    "username": "Sunil Woodworks",
+    "UserEmail": "carpentry@example.com",
+    "PostMessage": "Custom furniture & wood repairs",
+    "ask": false,
+    "Location": "Colombo",
+    "Description": "Demo listing for UI preview.\n\nMade-to-measure shelves, cupboards and furniture restoration. Share your measurements to discuss your project.",
+    "Address": "Colombo (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_1.jpg",
+    "ImageUrls": [
+      "assets/demo/post_1.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-garden",
+    "UserID": "demo-user-garden",
+    "username": "Green Leaf Gardens",
+    "UserEmail": "garden@example.com",
+    "PostMessage": "Garden care & lawn maintenance",
+    "ask": false,
+    "Location": "Kandy",
+    "Description": "Demo listing for UI preview.\n\nLawn mowing, pruning and small garden makeovers. One-off visits and monthly maintenance available.",
+    "Address": "Kandy (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_2.jpg",
+    "ImageUrls": [
+      "assets/demo/post_2.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-painting",
+    "UserID": "demo-user-painting",
+    "username": "Colour Craft",
+    "UserEmail": "painting@example.com",
+    "PostMessage": "Interior & exterior painting",
+    "ask": false,
+    "Location": "Galle",
+    "Description": "Demo listing for UI preview.\n\nRefresh a single room or your entire home. Surface preparation and finishing included in the estimate.",
+    "Address": "Galle (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_3.jpg",
+    "ImageUrls": [
+      "assets/demo/post_3.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-request-tap",
+    "UserID": "demo-user-request-tap",
+    "username": "Amaya Silva",
+    "UserEmail": "request-tap@example.com",
+    "PostMessage": "Need help fixing a leaking kitchen tap",
+    "ask": true,
+    "Location": "Colombo",
+    "Description": "Demo listing for UI preview.\n\nThe kitchen tap drips continuously. Looking for a plumber who can visit this weekend.",
+    "Address": "Colombo (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_1.jpg",
+    "ImageUrls": [
+      "assets/demo/post_1.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-request-clean",
+    "UserID": "demo-user-request-clean",
+    "username": "Kasun Fernando",
+    "UserEmail": "request-clean@example.com",
+    "PostMessage": "Looking for a move-out cleaning service",
+    "ask": true,
+    "Location": "Kandy",
+    "Description": "Demo listing for UI preview.\n\nTwo-bedroom apartment needs a deep clean before handing over the keys next Friday.",
+    "Address": "Kandy (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_2.jpg",
+    "ImageUrls": [
+      "assets/demo/post_2.jpg"
+    ]
+  },
+  {
+    "post_ID": "demo-request-shelf",
+    "UserID": "demo-user-request-shelf",
+    "username": "Dilini Jayasuriya",
+    "UserEmail": "request-shelf@example.com",
+    "PostMessage": "Can someone build a bookshelf?",
+    "ask": true,
+    "Location": "Galle",
+    "Description": "Demo listing for UI preview.\n\nLooking for a carpenter to build a small wooden bookshelf for a home office. Happy to discuss materials and dimensions.",
+    "Address": "Galle (sample address)",
+    "Mobile1": "Not available in preview",
+    "avatarUrl": "assets/demo/avatar_3.jpg",
+    "ImageUrls": [
+      "assets/demo/post_3.jpg"
+    ]
+  }
+]
