@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_list_tile.dart';
 import 'package:service_finder_application/features/posts/services/firestore.dart';
-import 'package:service_finder_application/features/posts/screens/open_post_page.dart';
+import 'package:service_finder_application/features/posts/screens/open_post_screen.dart';
 
 class AskForServicePostList extends StatelessWidget {
   final FirestoreDatabase database;

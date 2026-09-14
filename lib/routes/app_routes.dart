@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/auth/screens/login_or_register.dart';
-import 'package:service_finder_application/features/home/screens/home_page.dart';
-import 'package:service_finder_application/features/profile/screens/profile_page.dart';
-import 'package:service_finder_application/features/chat/screens/users_page.dart';
+import 'package:service_finder_application/features/auth/screens/login_or_register_screen.dart';
+import 'package:service_finder_application/features/home/screens/home_screen.dart';
+import 'package:service_finder_application/features/profile/screens/profile_screen.dart';
+import 'package:service_finder_application/features/chat/screens/users_screen.dart';
 
 class AppRoutes {
   const AppRoutes._();

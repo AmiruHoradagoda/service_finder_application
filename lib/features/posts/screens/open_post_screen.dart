@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/features/posts/services/firestore.dart';
-import 'package:service_finder_application/features/chat/screens/chat_page.dart';
+import 'package:service_finder_application/features/chat/screens/chat_screen.dart';
 
 class OpenedPostPage extends StatelessWidget {
   final String postId;

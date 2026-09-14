@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_list_tile.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
-import 'package:service_finder_application/features/chat/screens/chat_page.dart';
+import 'package:service_finder_application/features/chat/screens/chat_screen.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});

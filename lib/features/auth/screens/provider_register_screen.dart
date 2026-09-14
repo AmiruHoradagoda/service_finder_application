@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
-import 'package:service_finder_application/features/home/screens/home_page.dart';
+import 'package:service_finder_application/features/home/screens/home_screen.dart';
 
 class ProviderRegisterPage extends StatefulWidget {
   const ProviderRegisterPage({super.key});

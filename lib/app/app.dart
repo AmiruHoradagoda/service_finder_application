@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/auth/screens/auth.dart';
+import 'package:service_finder_application/features/auth/screens/auth_screen.dart';
 import 'package:service_finder_application/core/theme/dark_mode.dart';
 import 'package:service_finder_application/core/theme/light_mode.dart';
 import 'package:service_finder_application/routes/app_routes.dart';

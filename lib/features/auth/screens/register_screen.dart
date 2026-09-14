@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
-import 'package:service_finder_application/features/auth/screens/provider_register_page.dart';
+import 'package:service_finder_application/features/auth/screens/provider_register_screen.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
