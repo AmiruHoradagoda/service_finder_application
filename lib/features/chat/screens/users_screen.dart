@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/chat/services/chat_service.dart';
 import 'package:service_finder_application/shared/widgets/my_list_tile.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
 import 'package:service_finder_application/routes/app_routes.dart';
@@ -18,7 +18,7 @@ class UsersPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection("Users").snapshots(),
+          stream: ChatService().getUsersStream(),
           builder: (context, snapshot) {
             // any errors
             if (snapshot.hasError) {
@@ -37,7 +37,7 @@ class UsersPage extends StatelessWidget {
             }
 
             // get all users
-            final users = snapshot.data!.docs;
+            final users = snapshot.data!;
 
             return Column(
               children: [
@@ -52,9 +52,9 @@ class UsersPage extends StatelessWidget {
                       // get individual user
                       final user = users[index];
 
-                      String username = user['username'];
-                      String email = user['email'];
-                      String userID = user['user_ID'];
+                      final username = user.username ?? 'Unknown user';
+                      final email = user.email ?? '';
+                      final userID = user.userId;
 
                       return GestureDetector(
                         onTap: () {

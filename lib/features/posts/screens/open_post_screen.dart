@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/posts/services/firestore.dart';
+import 'package:service_finder_application/features/posts/services/post_service.dart';
 import 'package:service_finder_application/routes/app_routes.dart';
 
 class OpenedPostPage extends StatelessWidget {
@@ -9,11 +9,11 @@ class OpenedPostPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FirestoreDatabase database = FirestoreDatabase();
+    final PostService service = PostService();
     final theme = Theme.of(context);
 
     return FutureBuilder(
-      future: database.getPostById(postId),
+      future: service.getPostById(postId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -30,7 +30,7 @@ class OpenedPostPage extends StatelessWidget {
           );
         }
 
-        if (!snapshot.hasData || !snapshot.data!.exists) {
+        if (!snapshot.hasData) {
           return Center(
             child: Text(
               "Post not found",
@@ -39,19 +39,20 @@ class OpenedPostPage extends StatelessWidget {
           );
         }
 
-        final postData = snapshot.data!.data() as Map<String, dynamic>;
-        String postMessage = postData['PostMessage'] ?? '';
-        String description = postData['Description'] ?? '';
-        String address = postData['Address'] ?? '';
-        String mobile1 = postData['Mobile1'] ?? '';
-        String? mobile2 = postData['Mobile2'];
-        String username = postData['username'] ?? '';
-        String userEmail = postData['UserEmail'] ??
-            ''; // Assuming the email is stored in the post
-        String userID = postData['UserID'] ??
-            ''; // Assuming the user ID is stored in the post
-        List<dynamic> imageUrls = postData['ImageUrls'] ?? [];
-        bool ask = postData['ask'] ?? false;
+        final post = snapshot.data!;
+        final postMessage = post.message;
+        final description = post.description;
+        final address = post.address;
+        final mobile1 = post.mobile1;
+        final mobile2 = post.mobile2;
+        final username = post.username ?? '';
+        final userEmail = post.userEmail ?? '';
+        final userID = post.userId;
+        final imageUrls = post.imageUrls;
+        final ask = post.isAsk ?? false;
+        final whatsappLink = post.whatsappLink;
+        final facebookLink = post.facebookLink;
+        final websiteLink = post.websiteLink;
 
         return Scaffold(
           appBar: AppBar(
@@ -145,9 +146,9 @@ class OpenedPostPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 // Social Links Section - Visible only if `ask` is false
                 if (!ask &&
-                    (postData['WhatsappLink'] != null ||
-                        postData['FacebookLink'] != null ||
-                        postData['WebsiteLink'] != null))
+                    (whatsappLink != null ||
+                        facebookLink != null ||
+                        websiteLink != null))
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -171,14 +172,14 @@ class OpenedPostPage extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (postData['WhatsappLink'] != null) ...[
+                          if (whatsappLink != null) ...[
                             const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text("WhatsApp: "),
                                 Text(
-                                  postData['WhatsappLink'],
+                                  whatsappLink,
                                   style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
@@ -189,14 +190,14 @@ class OpenedPostPage extends StatelessWidget {
                               ],
                             )
                           ],
-                          if (postData['FacebookLink'] != null) ...[
+                          if (facebookLink != null) ...[
                             const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text("Facebook: "),
                                 Text(
-                                  postData['FacebookLink'],
+                                  facebookLink,
                                   style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
@@ -207,14 +208,14 @@ class OpenedPostPage extends StatelessWidget {
                               ],
                             )
                           ],
-                          if (postData['WebsiteLink'] != null) ...[
+                          if (websiteLink != null) ...[
                             const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text("Website: "),
                                 Text(
-                                  postData['WebsiteLink'],
+                                  websiteLink,
                                   style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,

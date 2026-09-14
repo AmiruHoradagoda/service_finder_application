@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:service_finder_application/features/auth/widgets/auth_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/auth/services/auth_service.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> login() async {
     await context.read<AuthNavigation>().authenticate(context, () async {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await AuthService().signIn(
         email: emailController.text,
         password: passwordController.text,
       );
@@ -29,8 +30,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Get screen size
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SingleChildScrollView(
@@ -38,20 +37,7 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image at the top covering the screen width (Full width, 35% height of screen)
-            Container(
-              width: size.width,
-              height: size.height * 0.35, // 35% of the screen height
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover, // Image will cover the container
-                  image: AssetImage('assets/images/service-provider-login.png'),
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-            ),
+            const AuthBanner(),
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Column(

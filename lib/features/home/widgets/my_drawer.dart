@@ -1,24 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:service_finder_application/features/home/widgets/home_drawer_tile.dart';
+import 'package:service_finder_application/features/profile/services/profile_service.dart';
+import 'package:service_finder_application/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/profile/models/user_profile.dart';
 import 'package:service_finder_application/routes/app_routes.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
-  // Function to fetch current user data
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    return await FirebaseFirestore.instance
-        .collection("Users")
-        .doc(currentUser?.email)
-        .get();
-  }
-
   Future<void> logout(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await AuthService().signOut();
     } on FirebaseAuthException catch (error) {
       if (context.mounted) displayMessageToUser(error.code, context);
     }
@@ -29,17 +23,17 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor:
           Theme.of(context).colorScheme.surface, // Theme-based surface color
-      child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      child: FutureBuilder<UserProfile?>(
         // Fetch user details
-        future: getUserDetails(),
+        future: ProfileService().getCurrentProfile(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           } else if (snapshot.hasData) {
-            var user = snapshot.data!.data();
-            String profileImageUrl = user?['profileImage'] ??
+            final user = snapshot.data!;
+            String profileImageUrl = user.profileImage ??
                 'https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png'; // Default if null
 
             return Column(
@@ -76,7 +70,7 @@ class MyDrawer extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                user?['username'] ?? 'User Name',
+                                user.username ?? 'User Name',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -87,7 +81,7 @@ class MyDrawer extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                user?['email'] ?? 'Email Address',
+                                user.email ?? 'Email Address',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Theme.of(context)
@@ -103,14 +97,12 @@ class MyDrawer extends StatelessWidget {
                     ),
                     const SizedBox(height: 45),
                     // Drawer items
-                    _buildListTile(
-                      context,
+                    HomeDrawerTile(
                       icon: Icons.home,
                       title: 'H O M E',
                       onTap: () => Navigator.pop(context),
                     ),
-                    _buildListTile(
-                      context,
+                    HomeDrawerTile(
                       icon: Icons.person,
                       title: 'P R O F I L E',
                       onTap: () {
@@ -118,8 +110,7 @@ class MyDrawer extends StatelessWidget {
                         AppRoutes.openProfile(context);
                       },
                     ),
-                    _buildListTile(
-                      context,
+                    HomeDrawerTile(
                       icon: Icons.chat,
                       title: 'M E S S A G E S',
                       onTap: () {
@@ -127,8 +118,7 @@ class MyDrawer extends StatelessWidget {
                         AppRoutes.openMessages(context);
                       },
                     ),
-                    _buildListTile(
-                      context,
+                    HomeDrawerTile(
                       icon: Icons.add_circle_outline,
                       title: 'C R E A T E  P O S T',
                       onTap: () {
@@ -140,8 +130,7 @@ class MyDrawer extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0, bottom: 25),
-                  child: _buildListTile(
-                    context,
+                  child: HomeDrawerTile(
                     icon: Icons.logout,
                     title: 'L O G  O U T',
                     onTap: () {
@@ -156,38 +145,6 @@ class MyDrawer extends StatelessWidget {
             return const Center(child: Text("No user data found"));
           }
         },
-      ),
-    );
-  }
-
-  // Helper method to create the ListTiles
-  Widget _buildListTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 25.0),
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: Theme.of(context)
-              .colorScheme
-              .secondary, // Dynamic secondary icon color
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                ?.color, // Updated text color for bodyLarge
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        onTap: onTap,
       ),
     );
   }

@@ -1,13 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:service_finder_application/features/profile/widgets/profile_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/profile/services/profile_service.dart';
+import 'package:service_finder_application/features/profile/models/user_profile.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final Map<String, dynamic>? userData;
-  const EditProfilePage({Key? key, this.userData}) : super(key: key);
+  final UserProfile? profile;
+  const EditProfilePage({Key? key, this.profile}) : super(key: key);
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -17,16 +17,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final User? currentUser = FirebaseAuth.instance.currentUser;
+  final ProfileService _profiles = ProfileService();
   File? _profileImage;
   String? _uploadedImageUrl;
 
   @override
   void initState() {
     super.initState();
-    usernameController.text = widget.userData?['username'] ?? '';
-    emailController.text = widget.userData?['email'] ?? '';
-    _uploadedImageUrl = widget.userData?['profileImage'];
+    usernameController.text = widget.profile?.username ?? '';
+    emailController.text = widget.profile?.email ?? '';
+    _uploadedImageUrl = widget.profile?.profileImage;
   }
 
   // Method to pick an image from gallery
@@ -34,55 +34,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
+    if (pickedFile != null && mounted) {
       setState(() {
         _profileImage = File(pickedFile.path);
       });
     }
   }
 
-  // Method to upload image to Firebase Storage and return the URL
-  Future<String?> _uploadProfileImage() async {
-    if (_profileImage == null) return null;
-
-    try {
-      final storageReference = FirebaseStorage.instance
-          .ref()
-          .child('profile_images/${currentUser!.uid}');
-      final uploadTask = storageReference.putFile(_profileImage!);
-      final snapshot = await uploadTask.whenComplete(() {});
-      final downloadUrl = await snapshot.ref.getDownloadURL();
-      return downloadUrl;
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error uploading image: $e")));
-      return null;
-    }
-  }
-
   // Method to update profile
   void _updateProfile() async {
     try {
-      String? profileImageUrl;
-      // If a new image is selected, upload it
-      if (_profileImage != null) {
-        profileImageUrl = await _uploadProfileImage();
-      }
-
-      // Update Firestore with the new username, email, and profile image (if available)
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(currentUser!.email)
-          .update({
-        'username': usernameController.text,
-        'email': emailController.text,
-        if (profileImageUrl != null) 'profileImage': profileImageUrl,
-      });
-
-      // If password is updated
-      if (passwordController.text.isNotEmpty) {
-        await currentUser!.updatePassword(passwordController.text);
-      }
+      await _profiles.updateProfile(
+        username: usernameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        image: _profileImage,
+      );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,19 +71,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: Column(
           children: [
             // Profile Image Picker
-            GestureDetector(
-              onTap: _pickProfileImage,
-              child: CircleAvatar(
-                radius: 60,
-                backgroundImage: _profileImage != null
-                    ? FileImage(_profileImage!)
-                    : (_uploadedImageUrl != null
-                            ? NetworkImage(_uploadedImageUrl!)
-                            : const AssetImage(
-                                'assets/images/default_profile.jpg'))
-                        as ImageProvider,
-              ),
-            ),
+            ProfileImagePicker(
+                image: _profileImage,
+                imageUrl: _uploadedImageUrl,
+                onPick: _pickProfileImage),
             const SizedBox(height: 20),
             // Username TextField
             TextField(

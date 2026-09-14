@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/profile/models/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:service_finder_application/features/auth/screens/login_screen.dart';
@@ -220,7 +221,7 @@ void main() {
     await AppRoutes.openChat(context,
         receiverUserID: 'receiver-1',
         receiverUserEmail: 'receiver@example.com');
-    await AppRoutes.openEditProfile(context, userData: null);
+    await AppRoutes.openEditProfile(context, profile: null);
     await tester.pumpAndSettle();
     expect(find.byType(LoginPage), findsOneWidget);
     expect(auth.navigatorKey.currentState!.canPop(), isFalse);
@@ -273,11 +274,14 @@ void main() {
     await tester.pumpAndSettle();
 
     final editResult = AppRoutes.openEditProfile(context,
-        userData: {'username': 'Existing name', 'email': 'user@example.com'});
+        profile: const UserProfile(
+            userId: 'user-a',
+            username: 'Existing name',
+            email: 'user@example.com'));
     final editRoute = observer.lastPushed! as MaterialPageRoute<void>;
     final edit = editRoute.builder(context) as EditProfilePage;
-    expect(edit.userData?['username'], 'Existing name');
-    expect(edit.userData?['email'], 'user@example.com');
+    expect(edit.profile?.username, 'Existing name');
+    expect(edit.profile?.email, 'user@example.com');
     navigator.removeRoute(editRoute);
     await editResult;
     await tester.pumpAndSettle();

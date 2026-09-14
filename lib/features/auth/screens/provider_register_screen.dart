@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/auth/services/auth_service.dart';
+import 'package:service_finder_application/features/auth/models/registration_data.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
@@ -36,27 +36,15 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
       return;
     }
     await context.read<AuthNavigation>().authenticate(context, () async {
-      final userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
+      await AuthService().register(
+        registration: RegistrationData(
+          username: userNameController.text,
+          email: emailController.text,
+          isProvider: true,
+        ),
         password: passwordController.text,
       );
-      await createUserDocument(userCredential);
     });
-  }
-
-  Future<void> createUserDocument(UserCredential? userCredential) async {
-    if (userCredential != null && userCredential.user != null) {
-      await FirebaseFirestore.instance
-          .collection("Users")
-          .doc(userCredential.user!.email)
-          .set({
-        'user_ID': userCredential.user!.uid,
-        'email': userCredential.user!.email,
-        'username': userNameController.text,
-        'provider': true, // Mark as a provider
-      });
-    }
   }
 
   @override

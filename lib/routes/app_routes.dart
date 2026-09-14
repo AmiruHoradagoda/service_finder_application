@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/profile/models/user_profile.dart';
 import 'package:provider/provider.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
 import 'package:service_finder_application/features/auth/screens/login_screen.dart';
@@ -81,15 +82,13 @@ class AppRoutes {
 
   static Future<void> openEditProfile(
     BuildContext context, {
-    required Map<String, dynamic>? userData,
+    required UserProfile? profile,
   }) =>
       _push(
           context,
           editProfile,
           (_) => EditProfilePage(
-                userData: userData == null
-                    ? null
-                    : Map<String, dynamic>.unmodifiable(userData),
+                profile: profile,
               ));
 
   static Future<void> openMessages(BuildContext context) =>

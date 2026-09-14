@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:service_finder_application/features/auth/widgets/auth_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/auth/services/auth_service.dart';
+import 'package:service_finder_application/features/auth/models/registration_data.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
@@ -30,33 +31,19 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
     await context.read<AuthNavigation>().authenticate(context, () async {
-      final userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
+      await AuthService().register(
+        registration: RegistrationData(
+          username: userNameController.text,
+          email: emailController.text,
+          isProvider: false,
+        ),
         password: passwordController.text,
       );
-      await createUserDocument(userCredential);
     });
-  }
-
-  Future<void> createUserDocument(UserCredential? userCredential) async {
-    if (userCredential != null && userCredential.user != null) {
-      await FirebaseFirestore.instance
-          .collection("Users")
-          .doc(userCredential.user!.email)
-          .set({
-        'user_ID': userCredential.user!.uid,
-        'email': userCredential.user!.email,
-        'username': userNameController.text,
-        'provider': false, // Set 'provider' to false by default
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Get screen size
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SingleChildScrollView(
@@ -64,20 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image at the top covering the screen width (Full width, 35% height of screen)
-            Container(
-              width: size.width,
-              height: size.height * 0.35, // 35% of the screen height
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.cover, // Image will cover the container
-                  image: AssetImage('assets/images/service-provider-login.png'),
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-            ),
+            const AuthBanner(),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(

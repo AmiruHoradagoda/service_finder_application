@@ -1,13 +1,12 @@
+import 'package:service_finder_application/features/posts/widgets/post_image_picker.dart';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:service_finder_application/features/profile/services/profile_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
-import 'package:service_finder_application/features/posts/services/firestore.dart';
+import 'package:service_finder_application/features/posts/services/post_service.dart';
 import 'package:service_finder_application/core/constants/locations.dart';
 
 class PostPage extends StatefulWidget {
@@ -30,7 +29,8 @@ class _PostPageState extends State<PostPage> {
   String? selectedLocation;
 
   List<File?> images = List<File?>.filled(4, null);
-  final FirestoreDatabase database = FirestoreDatabase();
+  final PostService _posts = PostService();
+  final ProfileService _profiles = ProfileService();
   bool isAskPost = true;
   bool isLoading = false;
 
@@ -41,17 +41,16 @@ class _PostPageState extends State<PostPage> {
   }
 
   Future<void> _checkProviderStatus() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(user.email)
-          .get();
-      if (userDoc.exists) {
-        bool isProvider = userDoc['provider'] ?? false;
-        setState(() {
-          isAskPost = !isProvider;
-        });
+    try {
+      final profile = await _profiles.getCurrentProfile();
+      if (profile != null && mounted) {
+        setState(() => isAskPost = !profile.isProvider);
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading profile: $error')),
+        );
       }
     }
   }
@@ -59,76 +58,45 @@ class _PostPageState extends State<PostPage> {
   Future<void> pickImage(int index) async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
+    if (pickedImage != null && mounted) {
       setState(() {
         images[index] = File(pickedImage.path);
       });
     }
   }
 
-  Future<List<String>> uploadImages(List<File?> images) async {
-    List<String> imageUrls = [];
-    FirebaseStorage storage = FirebaseStorage.instance;
-    for (File? image in images) {
-      if (image != null) {
-        try {
-          String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-          Reference storageRef = storage.ref().child("post_images/$fileName");
-          await storageRef.putFile(image);
-          String downloadUrl = await storageRef.getDownloadURL();
-          imageUrls.add(downloadUrl);
-        } catch (e) {
-          print("Error uploading image: $e");
-        }
-      }
-    }
-    return imageUrls;
-  }
-
   Future<void> postMessage(BuildContext context) async {
-    if (titleController.text.isNotEmpty &&
-        mobile1Controller.text.isNotEmpty &&
-        selectedLocation != null) {
-      setState(() {
-        isLoading = true;
-      });
-
-      String postId = DateTime.now().millisecondsSinceEpoch.toString();
-      String title = titleController.text;
-      String description = descriptionController.text;
-      String mobile1 = mobile1Controller.text;
-      String mobile2 = mobile2Controller.text;
-      String address = addressController.text;
-      String whatsappLink = whatsappLinkController.text;
-      String facebookLink = facebookLinkController.text;
-      String websiteLink = websiteLinkController.text;
-
-      List<String> imageUrls = await uploadImages(images);
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-
-      // Add the post to Firestore, including the selected location
-      await database.addPost(
-        postId: postId,
-        userId: userId,
-        message: title,
+    if (isLoading ||
+        titleController.text.isEmpty ||
+        mobile1Controller.text.isEmpty ||
+        selectedLocation == null) {
+      return;
+    }
+    setState(() => isLoading = true);
+    try {
+      await _posts.addPost(
+        message: titleController.text,
         isAsk: isAskPost,
-        description: description,
-        mobile1: mobile1,
-        mobile2: mobile2,
-        address: address,
-        whatsappLink: whatsappLink,
-        facebookLink: facebookLink,
-        websiteLink: websiteLink,
-        location: selectedLocation!, // Ensure the location is passed here
-        imageUrls: imageUrls,
+        description: descriptionController.text,
+        mobile1: mobile1Controller.text,
+        mobile2: mobile2Controller.text,
+        address: addressController.text,
+        whatsappLink: whatsappLinkController.text,
+        facebookLink: facebookLinkController.text,
+        websiteLink: websiteLinkController.text,
+        location: selectedLocation!,
+        imageFiles: List<File?>.of(images),
       );
-
       if (!mounted || !context.mounted) return;
-      setState(() {
-        images = List<File?>.filled(4, null);
-        isLoading = false;
-      });
       Navigator.pop(context);
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error creating post: $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
@@ -210,39 +178,7 @@ class _PostPageState extends State<PostPage> {
                 keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 20),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: images.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => pickImage(index),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: images[index] != null
-                          ? Image.file(
-                              images[index]!,
-                              fit: BoxFit.cover,
-                            )
-                          : Center(
-                              child: Text(
-                                "Select Image ${index + 1}",
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ),
-                    ),
-                  );
-                },
-              ),
+              PostImagePicker(images: images, onPick: pickImage),
               const SizedBox(height: 20),
               isLoading
                   ? const CircularProgressIndicator()

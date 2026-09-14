@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:service_finder_application/features/auth/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:service_finder_application/core/theme/dark_mode.dart';
@@ -13,7 +13,7 @@ class RootApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AuthNavigation(
-        FirebaseAuth.instance.authStateChanges().map((user) => user?.uid),
+        AuthService().sessionChanges,
       ),
       child: Consumer<AuthNavigation>(
         builder: (context, auth, _) => MaterialApp(

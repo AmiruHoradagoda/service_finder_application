@@ -1,14 +1,16 @@
+import 'package:service_finder_application/features/home/widgets/home_search_bar.dart';
+import 'package:service_finder_application/features/home/widgets/home_bottom_navigation.dart';
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/posts/widgets/ask_for_service_post_list.dart';
+import 'package:service_finder_application/features/home/models/post_filter.dart';
+import 'package:service_finder_application/features/home/widgets/ask_for_service_post_list.dart';
 import 'package:service_finder_application/features/home/widgets/my_drawer.dart';
-import 'package:service_finder_application/features/posts/widgets/providers_post_list.dart';
-import 'package:service_finder_application/features/posts/services/firestore.dart';
-import 'package:service_finder_application/core/constants/locations.dart'; // Import locations file
+import 'package:service_finder_application/features/home/widgets/providers_post_list.dart';
+import 'package:service_finder_application/features/home/services/home_service.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
 
-  final FirestoreDatabase database = FirestoreDatabase();
+  final HomeService service = HomeService();
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -32,108 +34,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  List<Map<String, dynamic>> _filterPosts(List<Map<String, dynamic>> posts) {
-    return posts.where((post) {
-      final matchesSearch = _searchQuery.isEmpty ||
-              post['PostMessage']
-                  ?.toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ??
-          false;
-      final matchesLocation =
-          _selectedLocation == null || post['Location'] == _selectedLocation;
-      return matchesSearch && matchesLocation;
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final filter =
+        PostFilter(searchQuery: _searchQuery, location: _selectedLocation);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 2,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(75.0),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Search TextField with enhanced styling
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(30.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        hintText: "Search posts...",
-                        prefixIcon: Icon(Icons.search),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 14.0),
-                      ),
-                    ),
-                  ),
-                ),
-                // Icon-only popup button for location with custom direction
-                Container(
-                  margin: const EdgeInsets.only(left: 8.0),
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: PopupMenuButton<String>(
-                    icon: const Icon(
-                      Icons.location_on,
-                      size: 24, // Icon size
-                    ),
-                    iconSize: 24, // Adjust icon size here
-                    onSelected: (value) {
-                      if (value == 'Clear Location') {
-                        setState(() {
-                          _selectedLocation = null;
-                        });
-                      } else {
-                        _onLocationChanged(value);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const PopupMenuItem<String>(
-                          value: 'Clear Location',
-                          child: Text('Clear Location'),
-                        ),
-                        ...locations.map((location) {
-                          return PopupMenuItem<String>(
-                            value: location,
-                            child: Text(location),
-                          );
-                        }),
-                      ];
-                    },
-                    offset: const Offset(0, 50), // Custom dropdown position
-                  ),
-                ),
-              ],
-            ),
-          ),
+        bottom: HomeSearchBar(
+          onSearchChanged: (value) => setState(() => _searchQuery = value),
+          onLocationChanged: _onLocationChanged,
         ),
       ),
       drawer: const MyDrawer(),
@@ -145,40 +58,20 @@ class _HomePageState extends State<HomePage> {
               child: _selectedIndex == 0
                   ? ProvidersPostList(
                       key: const ValueKey(0),
-                      database: widget.database,
-                      searchQuery: _searchQuery,
-                      selectedLocation: _selectedLocation,
+                      service: widget.service,
+                      filter: filter,
                     )
                   : AskForServicePostList(
                       key: const ValueKey(1),
-                      database: widget.database,
-                      searchQuery: _searchQuery,
-                      selectedLocation: _selectedLocation,
+                      service: widget.service,
+                      filter: filter,
                     ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: 'Providers',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.help),
-              label: 'Ask for Service',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue.shade900,
-          unselectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ),
+      bottomNavigationBar: HomeBottomNavigation(
+          selectedIndex: _selectedIndex, onTap: _onItemTapped),
     );
   }
 }
