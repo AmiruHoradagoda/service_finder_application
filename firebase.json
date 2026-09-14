@@ -3,8 +3,8 @@
     "platforms": {
       "android": {
         "default": {
-          "projectId": "newapp-service",
-          "appId": "1:1038531902572:android:537b6c0ac0863d07a52c49",
+          "projectId": "service-finder-app-8c9c3",
+          "appId": "1:199987603702:android:74e4d219d1fbb27a65a4d7",
           "fileOutput": "android/app/google-services.json"
         }
       },
@@ -14,6 +14,16 @@
           "configurations": {
             "android": "1:1038531902572:android:537b6c0ac0863d07a52c49",
             "web": "1:1038531902572:web:b2a0af520e347a13a52c49"
+          }
+        },
+        "lib/firebase_options.dart": {
+          "projectId": "service-finder-app-8c9c3",
+          "configurations": {
+            "android": "1:199987603702:android:74e4d219d1fbb27a65a4d7",
+            "ios": "1:199987603702:ios:8c81bfc2b5d6322d65a4d7",
+            "macos": "1:199987603702:ios:ddea5542481f0ae165a4d7",
+            "web": "1:199987603702:web:e8fe56d64acd49f765a4d7",
+            "windows": "1:199987603702:web:5c0bdc147f7b763d65a4d7"
           }
         }
       }
