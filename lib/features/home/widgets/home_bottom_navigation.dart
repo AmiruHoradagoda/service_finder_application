@@ -8,25 +8,21 @@ class HomeBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Providers',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.help),
-            label: 'Ask for Service',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.blue.shade900,
-        unselectedItemColor: Colors.grey,
-        onTap: onTap,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        type: BottomNavigationBarType.fixed,
-      ),
+    return NavigationBar(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: onTap,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      indicatorColor: const Color(0xFFBCEBED),
+      destinations: const [
+        NavigationDestination(
+            icon: Icon(Icons.storefront_outlined),
+            selectedIcon: Icon(Icons.storefront, color: Color(0xFF087F88)),
+            label: 'Find services'),
+        NavigationDestination(
+            icon: Icon(Icons.handshake_outlined),
+            selectedIcon: Icon(Icons.handshake, color: Color(0xFF087F88)),
+            label: 'Community requests'),
+      ],
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/features/home/models/post_filter.dart';
-import 'package:service_finder_application/shared/widgets/my_list_tile.dart';
+import 'package:service_finder_application/features/home/widgets/service_listing_card.dart';
 import 'package:service_finder_application/features/home/services/home_service.dart';
 import 'package:service_finder_application/routes/app_routes.dart';
 
@@ -49,28 +49,14 @@ class AskForServicePostList extends StatelessWidget {
           );
         }
 
-        return ListView.builder(
+        return ListView.separated(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           itemCount: posts.length,
-          itemBuilder: (context, index) {
-            final post = posts[index];
-            final message = post.message;
-            final username = post.username;
-            final thumbnailUrl =
-                post.imageUrls.isEmpty ? null : post.imageUrls.first;
-            final postId = post.id;
-
-            return GestureDetector(
-              onTap: () {
-                AppRoutes.openPost(context, postId: postId);
-              },
-              child: MyListTile(
-                title: message,
-                avatarImage: post.avatarUrl,
-                subtitle: username ?? 'Unknown user',
-                leadingImage: thumbnailUrl,
-              ),
-            );
-          },
+          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          itemBuilder: (context, index) => ServiceListingCard(
+            post: posts[index],
+            onTap: () => AppRoutes.openPost(context, postId: posts[index].id),
+          ),
         );
       },
     );
