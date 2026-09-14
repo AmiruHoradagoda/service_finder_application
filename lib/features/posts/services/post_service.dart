@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:service_finder_application/features/posts/services/demo_posts.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,6 +40,7 @@ class PostService {
     String? facebookLink,
     String? websiteLink,
     List<File?> imageFiles = const [],
+    List<Uint8List?> imageBytes = const [],
     required String location,
   }) async {
     final user = _firebaseAuth.currentUser;
@@ -52,6 +54,14 @@ class PostService {
       final fileName = DateTime.now().microsecondsSinceEpoch.toString();
       final reference = _imageStorage.ref().child('post_images/$fileName');
       await reference.putFile(image);
+      imageUrls.add(await reference.getDownloadURL());
+    }
+    for (final bytes in imageBytes) {
+      if (bytes == null) continue;
+      final reference = _imageStorage
+          .ref()
+          .child('post_images/${DateTime.now().microsecondsSinceEpoch}');
+      await reference.putData(bytes);
       imageUrls.add(await reference.getDownloadURL());
     }
     final document = _database.collection('Posts').doc();

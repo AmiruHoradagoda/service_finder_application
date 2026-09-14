@@ -1,11 +1,11 @@
 import 'package:service_finder_application/features/posts/widgets/post_image_picker.dart';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/features/profile/services/profile_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:service_finder_application/shared/widgets/my_button.dart';
-import 'package:service_finder_application/shared/widgets/my_textfield.dart';
+import 'package:service_finder_application/features/posts/widgets/post_form_section.dart';
+
 import 'package:service_finder_application/features/posts/services/post_service.dart';
 import 'package:service_finder_application/core/constants/locations.dart';
 
@@ -26,9 +26,10 @@ class _PostPageState extends State<PostPage> {
   final TextEditingController facebookLinkController = TextEditingController();
   final TextEditingController websiteLinkController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
   String? selectedLocation;
 
-  List<File?> images = List<File?>.filled(4, null);
+  List<Uint8List?> images = List<Uint8List?>.filled(4, null);
   final PostService _posts = PostService();
   final ProfileService _profiles = ProfileService();
   bool isAskPost = true;
@@ -58,20 +59,18 @@ class _PostPageState extends State<PostPage> {
   Future<void> pickImage(int index) async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null && mounted) {
+    if (pickedImage == null) return;
+    final bytes = await pickedImage.readAsBytes();
+    if (mounted) {
       setState(() {
-        images[index] = File(pickedImage.path);
+        images[index] = bytes;
       });
     }
   }
 
   Future<void> postMessage(BuildContext context) async {
-    if (isLoading ||
-        titleController.text.isEmpty ||
-        mobile1Controller.text.isEmpty ||
-        selectedLocation == null) {
-      return;
-    }
+    if (isLoading || !_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
     setState(() => isLoading = true);
     try {
       await _posts.addPost(
@@ -85,7 +84,7 @@ class _PostPageState extends State<PostPage> {
         facebookLink: facebookLinkController.text,
         websiteLink: websiteLinkController.text,
         location: selectedLocation!,
-        imageFiles: List<File?>.of(images),
+        imageBytes: List<Uint8List?>.of(images),
       );
       if (!mounted || !context.mounted) return;
       Navigator.pop(context);
@@ -101,96 +100,177 @@ class _PostPageState extends State<PostPage> {
   }
 
   @override
+  void dispose() {
+    for (final controller in [
+      titleController,
+      descriptionController,
+      mobile1Controller,
+      mobile2Controller,
+      addressController,
+      whatsappLinkController,
+      facebookLinkController,
+      websiteLinkController
+    ]) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  InputDecoration _decoration(String label, {String? hint}) => InputDecoration(
+        labelText: label,
+        hintText: hint,
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant)),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFF087F88), width: 2)),
+      );
+
+  Widget _field(TextEditingController controller, String label,
+          {String? hint,
+          bool required = false,
+          int lines = 1,
+          TextInputType keyboard = TextInputType.text}) =>
+      Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: TextFormField(
+            controller: controller,
+            maxLines: lines,
+            keyboardType: lines > 1 ? TextInputType.multiline : keyboard,
+            decoration: _decoration(label, hint: hint),
+            validator: required
+                ? (value) => value == null || value.trim().isEmpty
+                    ? 'Please enter ${label.toLowerCase()}.'
+                    : null
+                : null),
+      );
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.brightness == Brightness.dark
+          ? const Color(0xFF10292C)
+          : const Color(0xFFF3F8F8),
       appBar: AppBar(
-        title: Text(
-          isAskPost
-              ? "Create new 'Ask for Service' post."
-              : "Create new 'Provide Service' post.",
-          style: const TextStyle(
-            fontSize: 20,
-          ),
-          overflow: TextOverflow
-              .ellipsis, // Truncates text with ellipsis if it overflows
-          maxLines: 2, // Allows title to wrap to the next line
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Title",
-                obscureText: false,
-                controller: titleController,
-                keyboardType: TextInputType.text,
-              ),
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Description",
-                obscureText: false,
-                controller: descriptionController,
-                keyboardType: TextInputType.text,
-              ),
-              const SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: selectedLocation,
-                items: locations.map((location) {
-                  return DropdownMenuItem(
-                    value: location,
-                    child: Text(location),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedLocation = value;
-                  });
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Select Location",
-                ),
-              ),
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Mobile Number 1 (required)",
-                obscureText: false,
-                controller: mobile1Controller,
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Mobile Number 2 (optional)",
-                obscureText: false,
-                controller: mobile2Controller,
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 20),
-              MyTextField(
-                hintText: "Address (optional)",
-                obscureText: false,
-                controller: addressController,
-                keyboardType: TextInputType.text,
-              ),
-              const SizedBox(height: 20),
-              PostImagePicker(images: images, onPick: pickImage),
-              const SizedBox(height: 20),
-              isLoading
-                  ? const CircularProgressIndicator()
-                  : MyButton(
-                      onTap: () => postMessage(context),
-                      text: "Post",
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-            ],
-          ),
-        ),
-      ),
+          title: const Text('Create a post'),
+          backgroundColor: const Color(0xFF087F88),
+          foregroundColor: Colors.white,
+          elevation: 0),
+      body: SafeArea(
+          child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(20),
+        child: Center(
+            child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 680),
+          child: Form(
+              key: _formKey,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 8),
+                    Text(
+                        isAskPost
+                            ? 'What do you need help with?'
+                            : 'Let your skills do the talking.',
+                        style: const TextStyle(
+                            fontSize: 28,
+                            height: 1.15,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.7)),
+                    const SizedBox(height: 10),
+                    Text(
+                        isAskPost
+                            ? 'Tell your community about your project and find the right help.'
+                            : 'Share your service so people nearby can discover what you offer.',
+                        style: TextStyle(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            height: 1.5)),
+                    const SizedBox(height: 24),
+                    PostFormSection(
+                        icon: Icons.edit_note_rounded,
+                        title: 'The details',
+                        subtitle: 'A clear title helps people find your post.',
+                        children: [
+                          _field(titleController, 'Title',
+                              required: true,
+                              hint: isAskPost
+                                  ? 'e.g. Need a plumber for a kitchen repair'
+                                  : 'e.g. Home plumbing and repairs'),
+                          _field(descriptionController, 'Description',
+                              lines: 4,
+                              hint:
+                                  'Include the work involved, availability and anything else people should know.'),
+                        ]),
+                    PostFormSection(
+                        icon: Icons.location_on_outlined,
+                        title: 'Location & contact',
+                        subtitle:
+                            'These contact details will be visible on your post.',
+                        children: [
+                          DropdownButtonFormField<String>(
+                              initialValue: selectedLocation,
+                              isExpanded: true,
+                              menuMaxHeight: 320,
+                              decoration: _decoration('Location'),
+                              validator: (value) =>
+                                  value == null ? 'Choose a location.' : null,
+                              items: locations
+                                  .map((location) => DropdownMenuItem(
+                                      value: location, child: Text(location)))
+                                  .toList(),
+                              onChanged: (value) =>
+                                  setState(() => selectedLocation = value)),
+                          const SizedBox(height: 16),
+                          _field(mobile1Controller, 'Mobile number',
+                              required: true, keyboard: TextInputType.phone),
+                          _field(mobile2Controller,
+                              'Second mobile number (optional)',
+                              keyboard: TextInputType.phone),
+                          _field(addressController, 'Address (optional)'),
+                        ]),
+                    PostFormSection(
+                        icon: Icons.photo_library_outlined,
+                        title: 'Add photos',
+                        subtitle:
+                            'Optional ? Add up to 4 photos to bring your post to life.',
+                        children: [
+                          PostImagePicker(
+                              images: images,
+                              onPick: pickImage,
+                              onRemove: (index) =>
+                                  setState(() => images[index] = null)),
+                        ]),
+                    FilledButton.icon(
+                        onPressed:
+                            isLoading ? null : () => postMessage(context),
+                        style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF087F88),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(56),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16))),
+                        icon: isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2))
+                            : const Icon(Icons.publish_rounded),
+                        label:
+                            Text(isLoading ? 'Publishing?' : 'Publish post')),
+                    const SizedBox(height: 24),
+                  ])),
+        )),
+      )),
     );
   }
 }
