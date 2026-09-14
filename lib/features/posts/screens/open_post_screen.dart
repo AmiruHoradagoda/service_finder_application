@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/features/posts/services/firestore.dart';
-import 'package:service_finder_application/features/chat/screens/chat_screen.dart';
+import 'package:service_finder_application/routes/app_routes.dart';
 
 class OpenedPostPage extends StatelessWidget {
   final String postId;
@@ -257,14 +257,10 @@ class OpenedPostPage extends StatelessWidget {
           // Floating Action Button to open chat
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.push(
+              AppRoutes.openChat(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                    receiverUserEmail: userEmail,
-                    receiverUserID: userID,
-                  ),
-                ),
+                receiverUserEmail: userEmail,
+                receiverUserID: userID,
               );
             },
             backgroundColor: Theme.of(context).colorScheme.primary,

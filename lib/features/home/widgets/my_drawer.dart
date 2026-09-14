@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/posts/screens/create_post_screen.dart';
+import 'package:service_finder_application/routes/app_routes.dart';
+import 'package:service_finder_application/core/utils/helper_functions.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -15,8 +16,12 @@ class MyDrawer extends StatelessWidget {
         .get();
   }
 
-  void logout() {
-    FirebaseAuth.instance.signOut();
+  Future<void> logout(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } on FirebaseAuthException catch (error) {
+      if (context.mounted) displayMessageToUser(error.code, context);
+    }
   }
 
   @override
@@ -110,7 +115,7 @@ class MyDrawer extends StatelessWidget {
                       title: 'P R O F I L E',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/profile_page');
+                        AppRoutes.openProfile(context);
                       },
                     ),
                     _buildListTile(
@@ -119,7 +124,7 @@ class MyDrawer extends StatelessWidget {
                       title: 'M E S S A G E S',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/users_page');
+                        AppRoutes.openMessages(context);
                       },
                     ),
                     _buildListTile(
@@ -128,11 +133,7 @@ class MyDrawer extends StatelessWidget {
                       title: 'C R E A T E  P O S T',
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const PostPage()),
-                        );
+                        AppRoutes.openCreatePost(context);
                       },
                     ),
                   ],
@@ -145,7 +146,7 @@ class MyDrawer extends StatelessWidget {
                     title: 'L O G  O U T',
                     onTap: () {
                       Navigator.pop(context);
-                      logout();
+                      logout(context);
                     },
                   ),
                 ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_list_tile.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
-import 'package:service_finder_application/features/chat/screens/chat_screen.dart';
+import 'package:service_finder_application/routes/app_routes.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -58,14 +58,10 @@ class UsersPage extends StatelessWidget {
 
                       return GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                          AppRoutes.openChat(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatPage(
-                                receiverUserEmail: email,
-                                receiverUserID: userID,
-                              ),
-                            ),
+                            receiverUserEmail: email,
+                            receiverUserID: userID,
                           );
                         },
                         child: MyListTile(

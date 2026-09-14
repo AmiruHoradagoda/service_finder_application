@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
-import 'package:service_finder_application/features/auth/screens/provider_register_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:service_finder_application/routes/app_routes.dart';
+import 'package:service_finder_application/routes/auth_navigation.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? onTap;
@@ -22,30 +24,19 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  void registerUser() async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
+  Future<void> registerUser() async {
     if (passwordController.text != confirmPasswordController.text) {
-      Navigator.pop(context);
       displayMessageToUser("Passwords don't Match!", context);
-    } else {
-      try {
-        UserCredential? userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
-
-        createUserDocument(userCredential);
-        if (context.mounted) Navigator.pop(context);
-      } on FirebaseAuthException catch (e) {
-        Navigator.pop(context);
-        displayMessageToUser(e.code, context);
-      }
+      return;
     }
+    await context.read<AuthNavigation>().authenticate(context, () async {
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      await createUserDocument(userCredential);
+    });
   }
 
   Future<void> createUserDocument(UserCredential? userCredential) async {
@@ -60,13 +51,6 @@ class _RegisterPageState extends State<RegisterPage> {
         'provider': false, // Set 'provider' to false by default
       });
     }
-  }
-
-  void goToProviderRegisterPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProviderRegisterPage()),
-    );
   }
 
   @override
@@ -187,7 +171,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       const Text("Register as a service provider?"),
                       GestureDetector(
-                        onTap: goToProviderRegisterPage,
+                        onTap: () =>
+                            AppRoutes.openProviderRegistration(context),
                         child: const Text(
                           " Become a Provider.",
                           style: TextStyle(fontWeight: FontWeight.bold),

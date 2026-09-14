@@ -84,10 +84,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await currentUser!.updatePassword(passwordController.text);
       }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Profile updated successfully")));
       Navigator.pop(context);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Error: $e")));
     }
@@ -110,7 +112,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ? FileImage(_profileImage!)
                     : (_uploadedImageUrl != null
                             ? NetworkImage(_uploadedImageUrl!)
-                            : const AssetImage('assets/images/default_profile.jpg'))
+                            : const AssetImage(
+                                'assets/images/default_profile.jpg'))
                         as ImageProvider,
               ),
             ),

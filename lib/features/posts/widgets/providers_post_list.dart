@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_list_tile.dart';
 import 'package:service_finder_application/features/posts/services/firestore.dart';
-import 'package:service_finder_application/features/posts/screens/open_post_screen.dart';
+import 'package:service_finder_application/routes/app_routes.dart';
 
 class ProvidersPostList extends StatelessWidget {
   final FirestoreDatabase database;
@@ -86,14 +86,7 @@ class ProvidersPostList extends StatelessWidget {
 
             return GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => OpenedPostPage(
-                      postId: postId, // Pass post_ID to OpenedPostPage
-                    ),
-                  ),
-                );
+                AppRoutes.openPost(context, postId: postId);
               },
               child: MyListTile(
                 title: message,

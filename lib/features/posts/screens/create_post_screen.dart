@@ -123,6 +123,7 @@ class _PostPageState extends State<PostPage> {
         imageUrls: imageUrls,
       );
 
+      if (!mounted || !context.mounted) return;
       setState(() {
         images = List<File?>.filled(4, null);
         isLoading = false;

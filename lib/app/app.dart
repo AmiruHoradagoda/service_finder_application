@@ -1,21 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/auth/screens/auth_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:service_finder_application/core/theme/dark_mode.dart';
 import 'package:service_finder_application/core/theme/light_mode.dart';
 import 'package:service_finder_application/routes/app_routes.dart';
+import 'package:service_finder_application/routes/auth_navigation.dart';
 
 class RootApp extends StatelessWidget {
   const RootApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const AuthPage(),
-      theme: lightMode,
-      darkTheme: darkMode,
-      themeMode: ThemeMode.system,
-      routes: AppRoutes.routes,
+    return ChangeNotifierProvider(
+      create: (_) => AuthNavigation(
+        FirebaseAuth.instance.authStateChanges().map((user) => user?.uid),
+      ),
+      child: Consumer<AuthNavigation>(
+        builder: (context, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          navigatorKey: auth.navigatorKey,
+          onGenerateInitialRoutes: (_) => [AppRoutes.initialRoute(auth)],
+          // Navigation uses typed methods rather than incoming named routes.
+          onGenerateRoute: (_) => null,
+          theme: lightMode,
+          darkTheme: darkMode,
+          themeMode: ThemeMode.system,
+        ),
+      ),
     );
   }
 }

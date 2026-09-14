@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
 import 'package:service_finder_application/core/utils/helper_functions.dart';
-import 'package:service_finder_application/features/home/screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:service_finder_application/routes/auth_navigation.dart';
 
 class ProviderRegisterPage extends StatefulWidget {
-  const ProviderRegisterPage({super.key});
+  final VoidCallback onLogin;
+
+  const ProviderRegisterPage({super.key, required this.onLogin});
 
   @override
   State<ProviderRegisterPage> createState() => _ProviderRegisterPageState();
@@ -22,43 +25,24 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
 
   bool _agreedToTerms = false;
 
-  void registerUser() async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
+  Future<void> registerUser() async {
     if (passwordController.text != confirmPasswordController.text) {
-      Navigator.pop(context);
       displayMessageToUser("Passwords don't match!", context);
-    } else if (!_agreedToTerms) {
-      Navigator.pop(context);
+      return;
+    }
+    if (!_agreedToTerms) {
       displayMessageToUser(
           "You must agree to the terms and conditions", context);
-    } else {
-      try {
-        UserCredential? userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
-
-        createUserDocument(userCredential);
-
-        if (context.mounted) {
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
-        }
-      } on FirebaseAuthException catch (e) {
-        Navigator.pop(context);
-        displayMessageToUser(e.code, context);
-      }
+      return;
     }
+    await context.read<AuthNavigation>().authenticate(context, () async {
+      final userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      await createUserDocument(userCredential);
+    });
   }
 
   Future<void> createUserDocument(UserCredential? userCredential) async {
@@ -159,9 +143,7 @@ class _ProviderRegisterPageState extends State<ProviderRegisterPage> {
                   children: [
                     const Text("Already have an account?"),
                     GestureDetector(
-                      onTap: () {
-                        // Handle navigation to login page
-                      },
+                      onTap: widget.onLogin,
                       child: const Text(
                         " Login Here.",
                         style: TextStyle(fontWeight: FontWeight.bold),

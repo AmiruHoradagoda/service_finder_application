@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:service_finder_application/features/profile/screens/edit_profile_screen.dart'; // Import for edit profile
+import 'package:service_finder_application/routes/app_routes.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -210,14 +210,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       width:
                           double.infinity, // Make the button take up full width
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EditProfilePage(userData: user),
-                            ),
-                          );
+                        onPressed: () async {
+                          await AppRoutes.openEditProfile(context,
+                              userData: user);
+                          if (mounted) setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(

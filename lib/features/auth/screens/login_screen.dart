@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:service_finder_application/shared/widgets/my_button.dart';
 import 'package:service_finder_application/shared/widgets/my_textfield.dart';
-import 'package:service_finder_application/core/utils/helper_functions.dart';
+import 'package:provider/provider.dart';
+import 'package:service_finder_application/routes/auth_navigation.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? onTap;
@@ -17,25 +18,13 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void login() async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-
-    try {
+  Future<void> login() async {
+    await context.read<AuthNavigation>().authenticate(context, () async {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
-      // Close the dialog if the context is still mounted
-      if (mounted) Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      // Close the dialog safely if the context is still mounted
-      if (mounted) Navigator.pop(context);
-      displayMessageToUser(e.code, context);
-    }
+    });
   }
 
   @override
